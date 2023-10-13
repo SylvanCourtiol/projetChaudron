@@ -6,7 +6,7 @@ app.get('/api', function (request, response) {
     // TODO
 })
 
-app.use(express.static('./static'))
+app.use(express.static('./public'))
 
 app.listen(3000, function () {
     console.log("Server listening on port 3000")
