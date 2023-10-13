@@ -1,5 +1,6 @@
 # ignorer les modules node
-node_modules/
+chaudron-client/node_modules/
+chaudron-serveur/node_modules/
 
 # ignorer les fichiers de VSCode
 .vscode/
