@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "Chaudron",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -24,8 +24,7 @@
   },
   "contributors": [],
   "scripts": {
-    "dev": "",
-    "test": ""
+    "dev": "node app.js"
   },
   "dependencies": {
     "express": "^4.18.2"
