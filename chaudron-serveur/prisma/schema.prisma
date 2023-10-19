@@ -1,0 +1,41 @@
+generator client {
+   provider = "prisma-client-js"
+}
+
+model User {
+  id             Int         @default(autoincrement())    @id
+  name           String
+
+  marks          RecipeMark[]
+  recipes        Recipe[]
+  @@map(name: "users") // Alias the model as "users" in the database
+}
+
+model Recipe {
+  id             Int         @default(autoincrement())    @id
+  markdown       String
+  name           String
+  
+  marks          RecipeMark[]
+  users          User[]
+  
+  @@map(name: "recipies") // Alias the model as "recipies" in the database
+}
+
+model RecipeMark {
+  id             Int         @default(autoincrement())    @id
+  user_id        Int
+  recipe_id      Int
+  mark           Int
+
+  user           User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  recipe         Recipe      @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+  
+  @@unique([user_id, recipe_id])
+  @@map(name: "recipie_marks") // Alias the model as "recipie_marks" in the database
+}
+
+datasource db {
+   provider = "sqlite"
+   url      = "file:./dev.db"
+}
