@@ -1,10 +1,10 @@
 function Header() {
     return (
         <>
-            <header>
-                <h1>Chaudron</h1>
-                <h1>Vos meilleures recettes chaudronnées</h1>
-            </header>
+            <div className="navbar bg-base-100">
+                <img src="ChaudronHorizontalLogo.png" height="170" width="170"/>
+                <a className="btn btn-ghost normal-case text-xl">recettes</a>
+            </div>
         </>
     )
 }
