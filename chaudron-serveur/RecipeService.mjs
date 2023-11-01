@@ -64,9 +64,18 @@ export async function getRecipes(options) {
 }
 
 export async function createRecipe(toCreate) {
+    const recipe = await prisma.Recipe.create({
+        data: toCreate,
+    })
 
+    return recipe;
 }
 
 export async function updateRecipe(id, toUpdate) {
-    
+    const recipe = await prisma.Recipe.update({
+        where: {
+          id: id,
+        },
+        data: toUpdate,
+      })
 }
