@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { getRecipeById, getRecipes, createRecipe } from './RecipeService.mjs'
+import { getRecipeById, getRecipes, createRecipe, updateRecipe } from './RecipeService.mjs'
 
 const app = express()
 
@@ -53,7 +53,7 @@ app.get('/api/custom/recipes/:id/content', async function (request, response) {
         // problème
         response.statusCode = 400
         response.send('Bad request')
-        return;
+        return
     }
     const options = {
         noContent: request.query.noContent !== undefined && request.query.noContent.toLowerCase() == "true",
@@ -92,6 +92,43 @@ app.post('/api/custom/recipes', async function (request, response) {
     }
 
     const recipe = await createRecipe(toCreate)
+
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 400
+        response.send('Bad request')
+    }
+})
+
+app.patch('/api/custom/recipes/:id', async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (parseInt === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    
+    const toUpdate = {};
+
+    let somethingToUpdate = false;
+    if (request.body.name) {
+        toUpdate.name = request.body.name
+        somethingToUpdate = true
+    }
+    if (request.body.content) {
+        toUpdate.markdown = request.body.content
+        somethingToUpdate = true
+    }
+
+    if (!somethingToUpdate) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const recipe = await updateRecipe(id, toUpdate)
 
     if (recipe !== null) {
         response.send(recipe)

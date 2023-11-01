@@ -72,5 +72,10 @@ export async function createRecipe(toCreate) {
 }
 
 export async function updateRecipe(id, toUpdate) {
-    
+    const recipe = await prisma.Recipe.update({
+        where: {
+          id: id,
+        },
+        data: toUpdate,
+      })
 }
