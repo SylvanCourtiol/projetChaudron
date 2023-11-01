@@ -1,10 +1,10 @@
 import express from 'express'
 
-import { getRecipeById, getRecipes } from './RecipeService.mjs'
+import { getRecipeById, getRecipes, createRecipe } from './RecipeService.mjs'
 
 const app = express()
 
-// Pour post ou patch => attention injection de sql
+app.use(express.json());
 
 app.get('/api/custom/recipes', async function (request, response) {
     const options = {
@@ -75,6 +75,29 @@ app.get('/api/custom/recipes/:id/content', async function (request, response) {
     } else {
         response.statusCode = 404
         response.send('Not found')
+    }
+})
+
+app.post('/api/custom/recipes', async function (request, response) {
+
+    if (!request.body || !request.body.name || !request.body.content) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const toCreate = {
+        name: request.body.name,
+        markdown: request.body.content,
+    }
+
+    const recipe = await createRecipe(toCreate)
+
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 400
+        response.send('Bad request')
     }
 })
 
