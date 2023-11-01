@@ -13,7 +13,7 @@ function App() {
 
   useEffect(() => {
     // Récupération des recettes
-    fetch('http://localhost:3009/recipes')
+    fetch('/api/custom/recipes?noContent=true')
       .then((response) => response.json())
       .then((data) => setRecipes(data))
       .catch((error) => console.error('Erreur de récupération des recettes', error));
