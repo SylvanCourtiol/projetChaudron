@@ -21,6 +21,7 @@ export async function getRecipeById(id, options) {
         }
     })
     
+    // adapter le format du content
     if (recipe !== null && !options.noContent) {
         if (options.contentType == "text/html") {
             recipe.content = marked.parse(recipe.markdown)
@@ -60,4 +61,12 @@ export async function getRecipes(options) {
         });
     }
     return recipes;
+}
+
+export async function createRecipe(toCreate) {
+
+}
+
+export async function updateRecipe(id, toUpdate) {
+    
 }
