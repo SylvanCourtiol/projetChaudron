@@ -84,7 +84,6 @@ export async function updateRecipe(id, toUpdate) {
 
 //#endregion Recipes
 
-
 //#region Marks
 
 export async function getAverageRecipeMark(recipeId) {
@@ -137,7 +136,31 @@ export async function createOrUpdateUserRecipeMark(recipeId, userId, mark) {
     } catch (e) {
         return null
     }
-
-    //#endregion Marks
-
 }
+
+//#endregion Marks
+
+//#region Users
+
+export async function getUser(name) {
+    const user = await prisma.User.findFirst({
+        where: {
+            name: name,
+        }
+    })
+    console.log(user)
+    return user
+}
+
+export async function createUser(toCreate) {
+    
+    if (await getUser(toCreate.name) !== null) {
+        throw "Already exists"
+    }
+    const user = await prisma.User.create({
+        data: toCreate,
+    })
+    return user
+}
+
+//#endregion User
