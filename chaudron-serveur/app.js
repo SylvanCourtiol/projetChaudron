@@ -143,6 +143,7 @@ app.patch('/api/custom/recipes/:id', async function (request, response) {
 //#endregion Recipes
 
 //#region Marks
+
 app.get('/api/custom/recipesMarks/:recipeId', async function (request, response) {
     const recipeId = parseInt(request.params.recipeId)
     if (recipeId === NaN) {
@@ -212,6 +213,55 @@ app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
 })
 
 //#endregion Marks
+
+//#region Users
+
+app.get('/api/custom/users/authentification', async function (request, response) {
+    const name = request.query.name
+    if (!name || name.length === 0) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const user = await RecipeService.getUser(name)
+
+    if (user !== null) {
+        response.send(user)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+app.post('/api/custom/users', async function (request, response) {
+    try {
+        if (!request.body || !request.body.name || request.body.length === 0) {
+            response.statusCode = 400
+            response.send('Bad request')
+            return
+        }
+        const toCreate = { name: request.body.name }
+    
+        const user = await RecipeService.createUser(toCreate)
+    
+        if (user !== null) {
+            response.send(user)
+        } else {
+            response.statusCode = 404
+            response.send('Not found')
+            return
+        }
+    } catch (e) {
+        console.log(e)
+        response.statusCode = 409
+        response.send('Conflict')
+        return
+    }
+
+})
+
+//#endregion Users
 
 // app.use(express.static('./public'))
 
