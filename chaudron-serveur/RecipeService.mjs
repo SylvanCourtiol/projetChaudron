@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client'
-import { marked } from 'marked';
+import { marked, use } from 'marked';
 
 const prisma = new PrismaClient()
+
+//#region Recipes
 
 export async function getRecipeById(id, options) {
     const defaultOptions = { noContent: false, contentType: 'text/markdown'}
@@ -78,4 +80,64 @@ export async function updateRecipe(id, toUpdate) {
         },
         data: toUpdate,
       })
+}
+
+//#endregion Recipes
+
+
+//#region Marks
+
+export async function getAverageRecipeMark(recipeId) {
+    
+    if (await getRecipeById(recipeId) === null) {
+        throw "Not found"
+    }
+    const recipeMark = await prisma.RecipeMark.aggregate({
+        _avg: {
+          mark: true,
+        },
+        where: {
+          recipe_id: recipeId
+        },
+    })
+    return recipeMark._avg
+}
+
+export async function getUserRecipeMark(recipeId, userId) {
+    const recipe = await prisma.RecipeMark.findUnique({
+        where: {
+            user_id_recipe_id: { 
+                user_id: userId, 
+                recipe_id: recipeId
+            },
+        },
+    })
+    return recipe
+}
+
+export async function createOrUpdateUserRecipeMark(recipeId, userId, mark) {
+    try {
+        const upsertMark = await prisma.RecipeMark.upsert({
+            where: {
+                user_id_recipe_id: { 
+                    user_id: userId, 
+                    recipe_id: recipeId
+                },
+            },
+            update: {
+              mark: mark,
+            },
+            create: {
+              recipe_id: recipeId,
+              user_id: userId,
+              mark: mark,
+            },
+          })
+        return upsertMark
+    } catch (e) {
+        return null
+    }
+
+    //#endregion Marks
+
 }
