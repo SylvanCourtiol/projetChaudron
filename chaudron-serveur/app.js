@@ -1,10 +1,12 @@
 import express from 'express'
 
-import { getRecipeById, getRecipes, createRecipe, updateRecipe } from './RecipeService.mjs'
+import * as RecipeService from './RecipeService.mjs'
 
 const app = express()
 
 app.use(express.json());
+
+//#region Recipes
 
 app.get('/api/custom/recipes', async function (request, response) {
     const options = {
@@ -13,7 +15,7 @@ app.get('/api/custom/recipes', async function (request, response) {
     if (request.query.contentType !== undefined) {
         options.contentType = request.query.contentType
     }
-    const recipes = await getRecipes(options)
+    const recipes = await RecipeService.getRecipes(options)
 
     if (recipes !== null) {
         response.send(recipes)
@@ -25,7 +27,7 @@ app.get('/api/custom/recipes', async function (request, response) {
 
 app.get('/api/custom/recipes/:id', async function (request, response) {
     const id = parseInt(request.params.id)
-    if (parseInt === NaN) {
+    if (id === NaN) {
         // problème
         response.statusCode = 400
         response.send('Bad request')
@@ -37,7 +39,7 @@ app.get('/api/custom/recipes/:id', async function (request, response) {
     if (request.query.contentType !== undefined) {
         options.contentType = request.query.contentType
     }
-    const recipe = await getRecipeById(id, options)
+    const recipe = await RecipeService.getRecipeById(id, options)
 
     if (recipe !== null) {
         response.send(recipe)
@@ -49,7 +51,7 @@ app.get('/api/custom/recipes/:id', async function (request, response) {
 
 app.get('/api/custom/recipes/:id/content', async function (request, response) {
     const id = parseInt(request.params.id)
-    if (parseInt === NaN) {
+    if (id === NaN) {
         // problème
         response.statusCode = 400
         response.send('Bad request')
@@ -67,7 +69,7 @@ app.get('/api/custom/recipes/:id/content', async function (request, response) {
         response.send('Bad request')
     }
 
-    const recipe = await getRecipeById(id, options)
+    const recipe = await RecipeService.getRecipeById(id, options)
 
     if (recipe !== null) {
         response.setHeader('content-type', options.contentType)
@@ -91,7 +93,7 @@ app.post('/api/custom/recipes', async function (request, response) {
         markdown: request.body.content,
     }
 
-    const recipe = await createRecipe(toCreate)
+    const recipe = await RecipeService.createRecipe(toCreate)
 
     if (recipe !== null) {
         response.send(recipe)
@@ -103,7 +105,7 @@ app.post('/api/custom/recipes', async function (request, response) {
 
 app.patch('/api/custom/recipes/:id', async function (request, response) {
     const id = parseInt(request.params.id)
-    if (parseInt === NaN) {
+    if (id === NaN) {
         // problème
         response.statusCode = 400
         response.send('Bad request')
@@ -128,7 +130,7 @@ app.patch('/api/custom/recipes/:id', async function (request, response) {
         return
     }
 
-    const recipe = await updateRecipe(id, toUpdate)
+    const recipe = await RecipeService.updateRecipe(id, toUpdate)
 
     if (recipe !== null) {
         response.send(recipe)
@@ -137,6 +139,79 @@ app.patch('/api/custom/recipes/:id', async function (request, response) {
         response.send('Bad request')
     }
 })
+
+//#endregion Recipes
+
+//#region Marks
+app.get('/api/custom/recipesMarks/:recipeId', async function (request, response) {
+    const recipeId = parseInt(request.params.recipeId)
+    if (recipeId === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    try {
+        const mark = await RecipeService.getAverageRecipeMark(recipeId)
+
+        mark.recipeId = recipeId
+        response.send(mark)
+    } catch (e) {
+        response.statusCode = 404
+        response.send('Not found')
+        return
+    }
+})
+
+app.get('/api/custom/recipesMarks/:recipeId/:userId', async function (request, response) {
+    const recipeId = parseInt(request.params.recipeId)
+    const userId = parseInt(request.params.userId)
+    if (recipeId === NaN || userId === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    
+
+    const recipe = await RecipeService.getUserRecipeMark(recipeId, userId)
+
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, response) {
+    const recipeId = parseInt(request.params.recipeId)
+    const userId = parseInt(request.params.userId)
+    if (recipeId === NaN || userId === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    const mark = request.body.mark
+    if (!Number.isInteger(mark) || mark < 0 || mark > 5) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const recipe = await RecipeService.createOrUpdateUserRecipeMark(recipeId, userId, mark)
+
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+//#endregion Marks
 
 // app.use(express.static('./public'))
 
