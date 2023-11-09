@@ -53,6 +53,7 @@
 
 /* Styles for content container */
 .content {
+  margin-top: 20px; 
   background-color: #fff;
   border-radius: 8px;
   padding: 20px;
@@ -88,4 +89,15 @@ li {
   padding: 5px 10px;
   border-radius: 4px;
   font-weight: bold;
+}
+
+.star-rating {
+  font-size: 24px; /* Taille des étoiles */
+  color: gold;
+}
+
+.recipe-name {
+  font-size: 1.2em; /* Taille du texte */
+  font-weight: bold; /* Gras */
+  color: #333; /* Couleur du texte */
 }
