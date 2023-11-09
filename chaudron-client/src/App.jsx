@@ -5,6 +5,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Header from './header.jsx'
 import Footer from './footer.jsx'
+import Home from './home.jsx'
 
 function App() {
 
@@ -18,7 +19,7 @@ function App() {
       .then((data) => setRecipes(data))
       .catch((error) => console.error('Erreur de récupération des recettes', error));
 
-    // Récupération des notes
+    // Récupération des moyennes
     fetch('http://localhost:3009/marks')
       .then((response) => response.json())
       .then((data) => setNotes(data))
@@ -32,19 +33,7 @@ function App() {
     <div className="home-container">
     <Header />
 
-    <div className="content">
-      <ul>
-        {recipes.map((recipe) => (
-              <li key={recipe.id}>
-              <a href={`/recipe/${recipe.id}`} className="recipe-link">
-                {recipe.name}
-                <span className="average-rating">{calculateAverageRating(recipe, notes)}</span>
-              </a>
-            </li>
-            
-            ))}
-      </ul>
-    </div>
+    <Home recipes={recipes} notes={notes} />
 
     <Footer />
   </div>
@@ -52,19 +41,4 @@ function App() {
   )
 }
 
-
-function calculateAverageRating(recipe, notes) {
-  const recipeMarks = notes.filter((mark) => mark.recipe_id === recipe.id);
-
-  if (recipeMarks.length === 0) {
-    return 'Pas encore noté';
-  }
-
-  // Calculer la moyenne des notes
-  const totalRating = recipeMarks.reduce((sum, mark) => sum + mark.mark, 0);
-  const averageRating = totalRating / recipeMarks.length;
-  const roundedAverage = averageRating.toFixed(1);
-
-  return `${roundedAverage}/5`;
-}
 export default App
