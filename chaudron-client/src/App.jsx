@@ -1,44 +1,37 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Header from './header.jsx'
 import Footer from './footer.jsx'
 import Home from './home.jsx'
+import Layout from './layout.jsx'
+import NoPage from './nopage';
+import Recipe from './recipe';
+
 
 function App() {
 
-  const [recipes, setRecipes] = useState([]);
-  const [notes, setNotes] = useState([]);
-
-  useEffect(() => {
-    // Récupération des recettes
-    fetch('/api/custom/recipes?noContent=true')
-      .then((response) => response.json())
-      .then((data) => setRecipes(data))
-      .catch((error) => console.error('Erreur de récupération des recettes', error));
-
-    // Récupération des moyennes
-    fetch('http://localhost:3009/marks')
-      .then((response) => response.json())
-      .then((data) => setNotes(data))
-      .catch((error) => console.error('Erreur de récupération des notes', error));
-  }, []);
-
-  console.log(JSON.stringify(recipes));
-  console.log(JSON.stringify(notes));
-
   return (
-    <div className="home-container">
-    <Header />
 
-    <Home recipes={recipes} notes={notes} />
-
-    <Footer />
-  </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="recettes" element={<Recipe/>} />
+          <Route path="*" element={<NoPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
     
   )
 }
 
+///const root = ReactDOM.createRoot(document.getElementById('root'));
+//root.render(<App />);
+
 export default App
+

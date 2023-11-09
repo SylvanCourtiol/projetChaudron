@@ -1,6 +1,29 @@
 import React from 'react';
+import { useState } from 'react'
+import { useEffect } from 'react'
 
-function Home({ recipes, notes }) {
+function Home() {
+
+  const [recipes, setRecipes] = useState([]);
+  const [notes, setNotes] = useState([]);
+ 
+  useEffect(() => {
+    // Récupération des recettes
+    fetch('/api/custom/recipes?noContent=true')
+      .then((response) => response.json())
+      .then((data) => setRecipes(data))
+      .catch((error) => console.error('Erreur de récupération des recettes', error));
+ 
+    // Récupération des moyennes
+    fetch('http://localhost:3009/marks')
+      .then((response) => response.json())
+      .then((data) => setNotes(data))
+      .catch((error) => console.error('Erreur de récupération des notes', error));
+  }, []);
+ 
+  console.log(JSON.stringify(recipes));
+  console.log(JSON.stringify(notes));
+
   return (
     <div className="content">
       <ul>
