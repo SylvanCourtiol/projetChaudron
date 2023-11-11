@@ -1,12 +1,6 @@
-import { useState } from 'react'
-import { useEffect } from 'react'
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import Header from './header.jsx'
-import Footer from './footer.jsx'
 import Home from './home.jsx'
 import Layout from './layout.jsx'
 import NoPage from './nopage';
@@ -21,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="recettes" element={<Recipe/>} />
+          <Route path="recettes/*" element={<Recipe/>} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
