@@ -27,11 +27,11 @@ app.get('/api/custom/recipes', async function (request, response) {
 
 app.get('/api/custom/recipes/:id', async function (request, response) {
     const id = parseInt(request.params.id)
-    if (id === NaN) {
+    if (!id) {
         // problème
         response.statusCode = 400
         response.send('Bad request')
-        return;
+        return
     }
     const options = {
         noContent: request.query.noContent !== undefined && request.query.noContent.toLowerCase() == "true",
@@ -42,6 +42,7 @@ app.get('/api/custom/recipes/:id', async function (request, response) {
     const recipe = await RecipeService.getRecipeById(id, options)
 
     if (recipe !== null) {
+        console.log(recipe)
         response.send(recipe)
     } else {
         response.statusCode = 404
@@ -51,7 +52,7 @@ app.get('/api/custom/recipes/:id', async function (request, response) {
 
 app.get('/api/custom/recipes/:id/content', async function (request, response) {
     const id = parseInt(request.params.id)
-    if (id === NaN) {
+    if (!id) {
         // problème
         response.statusCode = 400
         response.send('Bad request')

@@ -1,9 +1,10 @@
+import logo from "../public/ChaudronLogo.png"
 function Footer() {
     return (
         <>
             <footer className="footer p-10 bg-base-200 text-base-content">
                 <aside>
-                    <img width="100" height="100" src="ChaudronLogo.png"/>
+                    <img width="100" height="100" src={logo}/>
                     <p>Projet Chaudron</p>
                 </aside>
                 <nav>
