@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 
 export let setEditableTextAreaValue = null
+export let editableTextAreaValue = ""
 
 const EditableTextarea = ({ initialValue, onTextChange }) => {
-  const [textValue, setTextValue] = useState(initialValue || '');
-  setEditableTextAreaValue = setTextValue
+  [editableTextAreaValue, setEditableTextAreaValue] = useState(initialValue || '');
 
   const handleTextChange = (event) => {
-    setTextValue(event.target.value);
+    setEditableTextAreaValue(event.target.value);
     onTextChange(event.target.value); // Appeler la fonction onTextChange pour transmettre la nouvelle valeur
   };
 
   return (
     <div>
       <textarea id="recipe"
-        value={textValue}
+        value={editableTextAreaValue}
         onChange={handleTextChange}
         rows="4"
         cols="50"
