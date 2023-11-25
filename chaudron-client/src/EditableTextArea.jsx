@@ -13,7 +13,8 @@ const EditableTextarea = ({ initialValue, onTextChange }) => {
 
   return (
     <div>
-      <textarea id="recipe"
+      <textarea
+        className="textarea textarea-bordered"
         value={editableTextAreaValue}
         onChange={handleTextChange}
         rows="4"

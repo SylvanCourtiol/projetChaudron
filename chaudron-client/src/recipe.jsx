@@ -1,5 +1,4 @@
-import React from "react"; 
-import { useLocation } from "react-router-dom";
+import React from "react";
 import EditableTextarea, {setEditableTextAreaValue, editableTextAreaValue} from "./EditableTextArea";
   
 class Recipe extends React.Component { 
@@ -15,14 +14,14 @@ class Recipe extends React.Component {
             }, 
             status : 0,
             inputName: ""
-        }    
+        }   
         
         this.recipe_id = extractRecipeIdFromURL()
 
+        // Pour que les fonctions soit dans le bon contexte de this
         this.handleNameInputChange = this.handleNameInputChange.bind(this);
-
-        this.handleClick = this.handleClick.bind(this);
-        
+        this.handleClick = this.handleClick.bind(this);  
+        this.updateURL = this.updateURL.bind(this);  
       }
 
       handleNameInputChange(event) {
@@ -37,25 +36,32 @@ class Recipe extends React.Component {
             try {
                 const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/html")
                 const recipe = await fetched.json();
-                this.setState({ ...this.state, recipe: recipe, status: fetched.status })
+                this.state = { ...this.state, recipe: recipe, status: fetched.status }
+                this.setState(this.state)
             } catch (e) {
                 console.log(e)
-                this.setState({ ...this.state, status : 1000 })
+                this.state = { ...this.state, status : 1000 }
+                this.setState(this.state)
             }
         } else { // write
             try {
                 const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/markdown")
                 const recipe = await fetched.json();
 
-                this.setState({ ...this.state, recipe: recipe, status: fetched.status, inputName: recipe.name })
-                setEditableTextAreaValue(this.state.recipe.content)
+                this.state = { ...this.state, recipe: recipe, status: fetched.status, inputName: recipe.name }
+                this.setState(this.state)
+                setEditableTextAreaValue(recipe.content)
+                
             } catch (e) {
                 console.log(e)
-                this.setState({ ...this.state, status : 1000 })
+                this.state = { ...this.state, status : 1000 }
+                this.setState(this.state)
                 
             }
             
         }
+        this.forceUpdate()
+        this.updateURL()
         
     }
 
@@ -100,6 +106,7 @@ class Recipe extends React.Component {
     } 
 
     async handleClick() {
+
         const recipe_id = extractRecipeIdFromURL()
 
         const fetched  = await fetch("/api/custom/recipes/" + recipe_id, {
@@ -112,9 +119,20 @@ class Recipe extends React.Component {
                 name: this.state.inputName,
             }),
         })
+        await this.componentDidMount()
+        this.updateURL()
     }
 
-
+    updateURL() {
+        let url = "/recettes/" + this.recipe_id;
+        if (this.state.recipe.name && this.state.recipe.name.length > 0) {
+            url += "/" + this.state.recipe.name
+        }
+        if (this.state.action == "write") {
+            url += "?action=write"
+        }
+        window.history.pushState(null, null, url);
+    }
 
     
 } 
