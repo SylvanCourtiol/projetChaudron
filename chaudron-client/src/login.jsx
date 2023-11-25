@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [jwt, setJwt] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Ajoutez ici la logique pour gérer la soumission du formulaire (connexion côté client).
+
+    fetch('/api/custom/users/authentification?name=' + username + '&password=' + password)
+      .then((response) => response.text())
+      .then((data) => {
+        setJwt(data);
+        sessionStorage.setItem('token', data);
+      })
+      .catch((error) => console.error('Utilisateur non inscrit', error));
     console.log('Nom d\'utilisateur:', username);
     console.log('Mot de passe:', password);
   };
@@ -45,7 +54,8 @@ const Login = () => {
 
           <button
             type="submit"
-            className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full"
+            //className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full"
           >
             Se connecter
           </button>

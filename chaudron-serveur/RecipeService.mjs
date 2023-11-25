@@ -142,10 +142,11 @@ export async function createOrUpdateUserRecipeMark(recipeId, userId, mark) {
 
 //#region Users
 
-export async function getUser(name) {
+export async function getUser(name, pwd) {
     const user = await prisma.User.findFirst({
         where: {
             name: name,
+            //password: pwd,
         }
     })
     console.log(user)
