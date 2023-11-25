@@ -1,12 +1,13 @@
 import React from "react"; 
 import { useLocation } from "react-router-dom";
+import EditableTextarea, {setEditableTextAreaValue} from "./EditableTextArea";
   
 class Recipe extends React.Component { 
 
     constructor () {
         super()
         this.state = {
-            action: "read",
+            action: "write",
             recipe : {
                 id: null,
                 name: "",
@@ -20,39 +21,58 @@ class Recipe extends React.Component {
       }
 
     async componentDidMount() {
-        try {
-            const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/html")
-            const recipe = await fetched.json();
-            this.setState({ ...this.state, recipe: recipe, status: fetched.status })
-        } catch (e) {
-            console.log(e)
-            this.setState({ ...this.state, status : 1000 })
-        }
-    }
-
-    render() { 
-        let statusBadge = {
-            type: "info",
-            text: ""
-        }
-        if (this.state.status == 0) {
-            statusBadge.text = "Chargement..."
-            statusBadge.type = "warning"
-        } else if (this.state.status >= 400) {
-            statusBadge.text = "Erreur de chargement de la recette"
-            statusBadge.type = "error"
+        if (this.state.action == "read") {
+            try {
+                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/html")
+                const recipe = await fetched.json();
+                this.setState({ ...this.state, recipe: recipe, status: fetched.status })
+            } catch (e) {
+                console.log(e)
+                this.setState({ ...this.state, status : 1000 })
+            }
         } else {
-            statusBadge.text = "Recette en mode lecture"
-            statusBadge.type = "info"
+            try {
+                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/markdown")
+                const recipe = await fetched.json();
+                this.setState({ ...this.state, recipe: recipe, status: fetched.status })
+            } catch (e) {
+                console.log(e)
+                this.setState({ ...this.state, status : 1000 })
+                
+            }
+            setEditableTextAreaValue(this.state.recipe.content)
         }
         
+    }
+
+    handleTextChange = (newText) => {
+        // this.setState((prevState) => ({
+        //   recipe: {
+        //     ...prevState.recipe,
+        //     content: newText,
+        //   },
+        // }));
+      };
+
+    render() { 
+        let textarea = this.state.recipe.content
+        
+
+        function handleTextChange() {
+            console.log(textarea)
+        }
         return (
-            <div id="recipe">
-                <div className={"badge badge-" + statusBadge.type + " gap-2"}>
-                    {statusBadge.text}
-                </div>
+            // <div id="recipe">
+            //     <h1>{this.state.recipe.name}</h1>
+            //     <div dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
+            // </div>
+            <div>
                 <h1>{this.state.recipe.name}</h1>
-                <div dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
+                <EditableTextarea
+          initialValue={textarea}
+          onTextChange={this.handleTextChange}
+        /> 
+                {this.state.recipe.content}
             </div>
         )
     } 
