@@ -5,11 +5,14 @@ import Home from './home.jsx'
 import Layout from './layout.jsx'
 import NoPage from './nopage';
 import Recipe from './recipe';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
   return (
-
+    <div>
+    <ToastContainer />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -19,6 +22,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </div>
     
   )
 }

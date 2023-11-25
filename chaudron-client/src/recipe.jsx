@@ -1,6 +1,7 @@
 import React from "react";
 import EditableTextarea, {setEditableTextAreaValue, editableTextAreaValue} from "./EditableTextArea";
-  
+import { toast } from 'react-toastify';
+
 class Recipe extends React.Component { 
 
     constructor () {
@@ -17,6 +18,9 @@ class Recipe extends React.Component {
         }   
         
         this.recipe_id = extractRecipeIdFromURL()
+
+        document.title = 'Chargement... | Recettes Chaudron';
+
 
         // Pour que les fonctions soit dans le bon contexte de this
         this.handleNameInputChange = this.handleNameInputChange.bind(this);
@@ -119,6 +123,12 @@ class Recipe extends React.Component {
                 name: this.state.inputName,
             }),
         })
+        if (this.state.status < 400) {
+            toast.success('Succès de la mise à jour.')
+        } else {
+            toast.error('Echec de la mise à jour.')
+        }
+
         await this.componentDidMount()
         this.updateURL()
     }
@@ -127,6 +137,7 @@ class Recipe extends React.Component {
         let url = "/recettes/" + this.recipe_id;
         if (this.state.recipe.name && this.state.recipe.name.length > 0) {
             url += "/" + this.state.recipe.name
+            document.title = this.state.recipe.name + ' | Recettes Chaudron';
         }
         if (this.state.action == "write") {
             url += "?action=write"
