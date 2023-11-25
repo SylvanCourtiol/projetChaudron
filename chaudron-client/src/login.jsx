@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
+    const navigate = useNavigate();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [jwt, setJwt] = useState('');
@@ -18,6 +22,8 @@ const Login = () => {
       .catch((error) => console.error('Utilisateur non inscrit', error));
     console.log('Nom d\'utilisateur:', username);
     console.log('Mot de passe:', password);
+    navigate('/');
+
   };
 
   return (
