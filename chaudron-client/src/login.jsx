@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 
 const Login = () => {
-    const navigate = useNavigate();
+const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +22,7 @@ const Login = () => {
       .catch((error) => console.error('Utilisateur non inscrit', error));
     console.log('Nom d\'utilisateur:', username);
     console.log('Mot de passe:', password);
-    navigate('/');
+    //navigate('/');
 
   };
 
@@ -65,6 +65,11 @@ const Login = () => {
           >
             Se connecter
           </button>
+
+          <p className="text-center text-gray-600 mt-2">
+            Pas encore inscrit? <Link to="/register" className="text-blue-500 hover:underline">S'inscrire</Link>
+          </p>
+
         </form>
       </div>
     </div>

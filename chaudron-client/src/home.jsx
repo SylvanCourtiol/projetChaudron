@@ -5,7 +5,6 @@ import { useEffect } from 'react'
 function Home() {
 
   const [recipes, setRecipes] = useState([]);
-  const [notes, setNotes] = useState([]);
  
   useEffect(() => {
     // Récupération des recettes
@@ -14,15 +13,9 @@ function Home() {
       .then((data) => setRecipes(data))
       .catch((error) => console.error('Erreur de récupération des recettes', error));
  
-    // Récupération des moyennes
-    fetch('http://localhost:3009/marks')
-      .then((response) => response.json())
-      .then((data) => setNotes(data))
-      .catch((error) => console.error('Erreur de récupération des notes', error));
   }, []);
  
   console.log(JSON.stringify(recipes));
-  console.log(JSON.stringify(notes));
 
   return (
     <div className="content">
@@ -31,7 +24,7 @@ function Home() {
           <li key={recipe.id}>
             <a href={`/recipe/${recipe.id}`} className="recipe-link">
             <span className="recipe-name">{recipe.name}</span>
-            <span className="star-rating">{renderStarRating(calculateAverageRating(recipe, notes))}</span>            </a>
+            </a>
           </li>
         ))}
       </ul>
@@ -39,21 +32,7 @@ function Home() {
   );
 }
 
-function calculateAverageRating(recipe, notes) {
-  const recipeMarks = notes.filter((mark) => mark.recipe_id === recipe.id);
-
-  if (recipeMarks.length === 0) {
-    return 'Pas encore noté';
-  }
-
-  const totalRating = recipeMarks.reduce((sum, mark) => sum + mark.mark, 0);
-  const averageRating = totalRating / recipeMarks.length;
-  const roundedAverage = averageRating.toFixed(1);
-
-  return `${roundedAverage}/5`;
-}
-
-
+/*
 function renderStarRating(averageRating) {
     averageRating = parseFloat(averageRating);
 
@@ -81,6 +60,6 @@ function renderStarRating(averageRating) {
     }
     return `${stars} (${averageRating}/5)`; ;
   }
-
+*/
 
 export default Home;
