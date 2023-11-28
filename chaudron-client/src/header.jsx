@@ -8,6 +8,11 @@ function Header() {
       // Redirige vers la page de connexion
       navigate('/login');
     };
+
+    const handleRegisterClick = () => {
+      // Redirige vers la page d'inscription
+      navigate('/register');
+    };
   
     return (
       <>
@@ -15,7 +20,10 @@ function Header() {
           <img src="ChaudronHorizontalLogo.png" height="170" width="170" alt="Logo" />
           <div className="flex items-center">
             <button onClick={handleLoginClick} className="btn btn-ghost normal-case text-xl mr-4">
-              Login
+              Se connecter
+            </button>
+             <button onClick={handleRegisterClick} className="btn btn-ghost normal-case text-xl">
+              S'inscrire
             </button>
             <Link to="/" className="btn btn-ghost normal-case text-xl">
               Recettes

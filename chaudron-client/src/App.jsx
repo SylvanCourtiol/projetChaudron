@@ -12,6 +12,7 @@ import Layout from './layout.jsx'
 import NoPage from './nopage';
 import Recipe from './recipe';
 import Login from './login';
+import Register from './register';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
           <Route path="recettes" element={<Recipe/>} />
           <Route path="*" element={<NoPage />} />
         </Route>

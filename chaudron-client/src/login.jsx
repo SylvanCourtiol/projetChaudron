@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -69,6 +69,11 @@ const Login = () => {
           >
             Se connecter
           </button>
+
+          <p className="text-center text-gray-600 mt-2">
+            Pas encore inscrit? <Link to="/register" className="text-blue-500 hover:underline">S'inscrire</Link>
+          </p>
+
         </form>
       </div>
     </div>
