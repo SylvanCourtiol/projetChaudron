@@ -1,0 +1,4 @@
+.recipe-content * {
+    all: revert;
+    text-align: left;
+}
