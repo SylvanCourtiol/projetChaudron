@@ -2,6 +2,7 @@ import React from "react";
 import EditableTextarea, {setEditableTextAreaValue, editableTextAreaValue} from "./EditableTextArea";
 import { toast } from 'react-toastify';
 import './recipe.css';
+import Stars from "./stars";
 
 class Recipe extends React.Component { 
 
@@ -13,7 +14,9 @@ class Recipe extends React.Component {
                 id: null,
                 name: "",
                 content: "",
+                
             }, 
+            note: 10,
             status : 0,
             inputName: "",
             toggleEditionMode : false,
@@ -29,6 +32,7 @@ class Recipe extends React.Component {
         this.handleClick = this.handleClick.bind(this);  
         this.updateURL = this.updateURL.bind(this);  
         this.handleToggleEditionMode = this.handleToggleEditionMode.bind(this); 
+        this.onNoteChange = this.onNoteChange.bind(this);
       }
 
       handleNameInputChange(event) {
@@ -37,49 +41,6 @@ class Recipe extends React.Component {
         }
         
     }
-
-    async componentDidMount() {
-        if (this.state.action == "read") {
-            try {
-                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/html")
-                const recipe = await fetched.json();
-                this.state = { ...this.state, recipe: recipe, status: fetched.status }
-                this.setState(this.state)
-            } catch (e) {
-                console.log(e)
-                this.state = { ...this.state, status : 1000 }
-                this.setState(this.state)
-            }
-        } else { // write
-            try {
-                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/markdown")
-                const recipe = await fetched.json();
-
-                this.state = { ...this.state, recipe: recipe, status: fetched.status, inputName: recipe.name }
-                this.setState(this.state)
-                setEditableTextAreaValue(recipe.content)
-                
-            } catch (e) {
-                console.log(e)
-                this.state = { ...this.state, status : 1000 }
-                this.setState(this.state)
-                
-            }
-            
-        }
-        this.forceUpdate()
-        this.updateURL()
-        
-    }
-
-    handleTextChange = (newText) => {
-        // this.setState((prevState) => ({
-        //   recipe: {
-        //     ...prevState.recipe,
-        //     content: newText,
-        //   },
-        // }));
-      };
 
     render() { 
         this.state.action = extractActionFromURL()
@@ -120,21 +81,11 @@ class Recipe extends React.Component {
                 </div>
             )
         }
+
         return (
             <div>
-                <div className="rating rating-lg rating-half">
-                    <input type="radio" name="rating-10" className="rating-hidden" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" checked />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                </div>
+                <Stars initialValue={this.state.note} editable={true} onNoteChange={this.onNoteChange} />
+                <p>Note = {this.state.note}</p>
 
                 <div className="flex flex-col">
                     <div className="form-control w-52">
@@ -153,7 +104,46 @@ class Recipe extends React.Component {
                 { content }
             </div>
         )
-    } 
+    }
+
+    async componentDidMount() {
+        if (this.state.action == "read") {
+            try {
+                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/html")
+                const recipe = await fetched.json();
+                this.state = { ...this.state, recipe: recipe, status: fetched.status }
+                this.setState(this.state)
+            } catch (e) {
+                console.log(e)
+                this.state = { ...this.state, status : 1000 }
+                this.setState(this.state)
+            }
+        } else { // write
+            try {
+                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/markdown")
+                const recipe = await fetched.json();
+
+                this.state = { ...this.state, recipe: recipe, status: fetched.status, inputName: recipe.name }
+                this.setState(this.state)
+                setEditableTextAreaValue(recipe.content)
+                
+            } catch (e) {
+                console.log(e)
+                this.state = { ...this.state, status : 1000 }
+                this.setState(this.state)
+                
+            }
+            
+        }
+        this.forceUpdate()
+        this.updateURL()
+        
+    }v
+
+    onNoteChange(value) {
+        this.state.note = value
+        this.setState(this.state)
+    }
 
     handleToggleEditionMode() {
         this.state.toggleEditionMode = !this.state.toggleEditionMode
