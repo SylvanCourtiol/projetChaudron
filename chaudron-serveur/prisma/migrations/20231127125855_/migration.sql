@@ -1,7 +1,10 @@
 -- CreateTable
 CREATE TABLE "users" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "mail" TEXT NOT NULL,
+    "birthdate" DATETIME NOT NULL
 );
 
 -- CreateTable
@@ -28,6 +31,9 @@ CREATE TABLE "_RecipeToUser" (
     CONSTRAINT "_RecipeToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "recipes" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "_RecipeToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "recipe_marks_user_id_recipe_id_key" ON "recipe_marks"("user_id", "recipe_id");

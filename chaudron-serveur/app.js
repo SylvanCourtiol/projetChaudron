@@ -1,4 +1,6 @@
 import express from 'express'
+import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 
 import * as RecipeService from './RecipeService.mjs'
 
@@ -174,7 +176,6 @@ app.get('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
         response.send('Bad request')
         return
     }
-    
 
     const recipe = await RecipeService.getUserRecipeMark(recipeId, userId)
 
@@ -216,17 +217,20 @@ app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
 
 //#region Users
 
-app.get('/api/custom/users/authentification', async function (request, response) {
-    const name = request.query.name
-    if (!name || name.length === 0) {
+const secretKey = crypto.randomBytes(64).toString('hex');
+app.post('/api/custom/users/authentification', async function (request, response) {
+    const { username, password } = request.body
+    if (!username || ! password || username.length === 0 || password.length === 0) {
         response.statusCode = 400
         response.send('Bad request')
         return
     }
 
-    const user = await RecipeService.getUser(name)
+    const user = await RecipeService.getUser(username, password)
 
     if (user !== null) {
+        const token = jwt.sign(user, secretKey, {expiresIn: '2h'})
+        user.token = token
         response.send(user)
     } else {
         response.statusCode = 404
