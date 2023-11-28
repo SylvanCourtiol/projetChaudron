@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 //#region Recipes
 
 export async function getRecipeById(id, options) {
-    const defaultOptions = { noContent: false, contentType: 'text/markdown'}
+    const defaultOptions = { noContent: false, contentType: 'text/markdown' }
     options = {
         ...defaultOptions,
         ...options,
@@ -14,7 +14,7 @@ export async function getRecipeById(id, options) {
 
     const recipe = await prisma.Recipe.findUnique({
         where: {
-          id: id,
+            id: id,
         },
         select: {
             id: true,
@@ -22,7 +22,7 @@ export async function getRecipeById(id, options) {
             markdown: !options.noContent
         }
     })
-    
+
     // adapter le format du content
     if (recipe !== null && !options.noContent) {
         if (options.contentType == "text/html") {
@@ -37,7 +37,7 @@ export async function getRecipeById(id, options) {
 
 export async function getRecipes(options) {
 
-    const defaultOptions = { noContent: false, contentType: 'text/markdown'}
+    const defaultOptions = { noContent: false, contentType: 'text/markdown' }
     options = {
         ...defaultOptions,
         ...options,
@@ -76,10 +76,10 @@ export async function createRecipe(toCreate) {
 export async function updateRecipe(id, toUpdate) {
     const recipe = await prisma.Recipe.update({
         where: {
-          id: id,
+            id: id,
         },
         data: toUpdate,
-      })
+    })
 }
 
 //#endregion Recipes
@@ -87,16 +87,16 @@ export async function updateRecipe(id, toUpdate) {
 //#region Marks
 
 export async function getAverageRecipeMark(recipeId) {
-    
+
     if (await getRecipeById(recipeId) === null) {
         throw "Not found"
     }
     const recipeMark = await prisma.RecipeMark.aggregate({
         _avg: {
-          mark: true,
+            mark: true,
         },
         where: {
-          recipe_id: recipeId
+            recipe_id: recipeId
         },
     })
     return recipeMark._avg
@@ -105,8 +105,8 @@ export async function getAverageRecipeMark(recipeId) {
 export async function getUserRecipeMark(recipeId, userId) {
     const recipe = await prisma.RecipeMark.findUnique({
         where: {
-            user_id_recipe_id: { 
-                user_id: userId, 
+            user_id_recipe_id: {
+                user_id: userId,
                 recipe_id: recipeId
             },
         },
@@ -118,20 +118,20 @@ export async function createOrUpdateUserRecipeMark(recipeId, userId, mark) {
     try {
         const upsertMark = await prisma.RecipeMark.upsert({
             where: {
-                user_id_recipe_id: { 
-                    user_id: userId, 
+                user_id_recipe_id: {
+                    user_id: userId,
                     recipe_id: recipeId
                 },
             },
             update: {
-              mark: mark,
+                mark: mark,
             },
             create: {
-              recipe_id: recipeId,
-              user_id: userId,
-              mark: mark,
+                recipe_id: recipeId,
+                user_id: userId,
+                mark: mark,
             },
-          })
+        })
         return upsertMark
     } catch (e) {
         return null
@@ -145,16 +145,25 @@ export async function createOrUpdateUserRecipeMark(recipeId, userId, mark) {
 export async function getUser(name, pwd) {
     const user = await prisma.User.findFirst({
         where: {
-            name: name,
-            //password: pwd,
+            username: name,
         }
     })
-    console.log(user)
-    return user
+    if (!user) {
+        return null; //utilisateur non trouvé
+    }
+
+    if (pwd === user.password) {
+        delete user.password
+        console.log(user)
+        return user;
+    } else {
+        return null;
+    }
+
 }
 
 export async function createUser(toCreate) {
-    
+
     if (await getUser(toCreate.name) !== null) {
         throw "Already exists"
     }
