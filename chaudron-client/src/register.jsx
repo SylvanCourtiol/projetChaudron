@@ -42,6 +42,19 @@ const Register = () => {
       <div className="bg-white p-8 rounded shadow-md grid grid-cols-1 gap-6 max-w-sm w-full">
         <h2 className="text-3xl font-semibold text-center">Inscription</h2>
 
+        <div>
+            <label htmlFor="email" className="text-gray-700">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+              required
+            />
+          </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="text-gray-700">Nom d'utilisateur:</label>

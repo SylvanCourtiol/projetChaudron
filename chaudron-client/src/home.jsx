@@ -32,34 +32,4 @@ function Home() {
   );
 }
 
-/*
-function renderStarRating(averageRating) {
-    averageRating = parseFloat(averageRating);
-
-    averageRating = 3.5;
-    const totalStars = 5;
-    const fullStars = Math.floor(averageRating);
-
-    console.log(fullStars);
-    let stars = '';
-
-
-    //étoiles pleines
-    for (let i = 0; i < fullStars; i++) {
-      stars += '★';
-    }
-  
-    // demi-étoiles
-    if (averageRating - fullStars > 0) {
-      stars += '½'; 
-    }
-  
-    // étoiles vides
-    for (let i = 0; i < totalStars - Math.ceil(averageRating); i++) {
-      stars += '☆';
-    }
-    return `${stars} (${averageRating}/5)`; ;
-  }
-*/
-
 export default Home;
