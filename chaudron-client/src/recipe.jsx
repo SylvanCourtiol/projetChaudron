@@ -96,11 +96,6 @@ class Recipe extends React.Component {
                     <div className="recipe-content" dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
                     </div>
                 </div>
-
-
-                <h1>{this.state.recipe.name}</h1>
-                <hr class/>
-                <div className="recipe-content" dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
             </div>
             )
         } else {
@@ -127,6 +122,20 @@ class Recipe extends React.Component {
         }
         return (
             <div>
+                <div className="rating rating-lg rating-half">
+                    <input type="radio" name="rating-10" className="rating-hidden" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" checked />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
+                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
+                </div>
+
                 <div className="flex flex-col">
                     <div className="form-control w-52">
                         <label className="cursor-pointer label">
