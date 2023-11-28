@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-
 const Login = () => {
-const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [jwt, setJwt] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Ajoutez ici la logique pour gérer la soumission du formulaire (connexion côté client).
-
-    fetch('/api/custom/users/authentification?name=' + username + '&password=' + password)
-      .then((response) => response.text())
-      .then((data) => {
-        setJwt(data);
-        sessionStorage.setItem('token', data);
-      })
-      .catch((error) => console.error('Utilisateur non inscrit', error));
+    fetch('/api/custom/users/authentification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({username, password})
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('id', data.id)
+      sessionStorage.setItem('username', data.username)
+    })
+    .catch((error) => console.error('Utilisateur non inscrit', error));
     console.log('Nom d\'utilisateur:', username);
     console.log('Mot de passe:', password);
     //navigate('/');
@@ -75,5 +79,16 @@ const navigate = useNavigate();
     </div>
   );
 };
+
+export function connectedUser() {
+  const user = sessionStorage.getItem('username')
+  const token = sessionStorage.getItem('id')
+  const id = sessionStroage.getItem('token')
+  const credentials = {user, token, id}
+  if ( user && token && id) {
+    return credentials
+  }
+  return null
+}
 
 export default Login;

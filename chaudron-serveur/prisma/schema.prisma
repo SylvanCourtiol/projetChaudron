@@ -4,7 +4,10 @@ generator client {
 
 model User {
   id             Int         @default(autoincrement())    @id
-  name           String
+  username       String      @unique
+  password       String
+  mail           String
+  birthdate      DateTime
 
   marks          RecipeMark[]
   recipes        Recipe[]

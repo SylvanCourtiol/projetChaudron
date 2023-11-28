@@ -218,20 +218,20 @@ app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
 //#region Users
 
 const secretKey = crypto.randomBytes(64).toString('hex');
-app.get('/api/custom/users/authentification', async function (request, response) {
-    const name = request.query.name
-    const password = request.query.password
-    if (!name || ! password || name.length === 0 || password.length === 0) {
+app.post('/api/custom/users/authentification', async function (request, response) {
+    const { username, password } = request.body
+    if (!username || ! password || username.length === 0 || password.length === 0) {
         response.statusCode = 400
         response.send('Bad request')
         return
     }
-    
-    const user = await RecipeService.getUser(name, password)
+
+    const user = await RecipeService.getUser(username, password)
 
     if (user !== null) {
         const token = jwt.sign(user, secretKey, {expiresIn: '2h'})
-        response.send(token)
+        user.token = token
+        response.send(user)
     } else {
         response.statusCode = 404
         response.send('Not found')
