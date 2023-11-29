@@ -16,7 +16,8 @@ class Recipe extends React.Component {
                 content: "",
                 
             }, 
-            note: 10,
+            note: 7,
+            userNote: 10,
             status : 0,
             inputName: "",
             toggleEditionMode : false,
@@ -49,15 +50,7 @@ class Recipe extends React.Component {
         let content = (<h1>Erreur</h1>)
         if (this.state.action == "read") {
             content = (
-            <div>
-                <div class="card card-compact w-max bg-base-100 shadow-xl">
-                    <h1>{this.state.recipe.name}</h1>
-                    <hr></hr>
-                    <div class="card-body">
-                    <div className="recipe-content" dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
-                    </div>
-                </div>
-            </div>
+                <div className="recipe-content" dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
             )
         } else {
             content = (
@@ -83,26 +76,41 @@ class Recipe extends React.Component {
         }
 
         return (
-            <div>
-                <Stars initialValue={this.state.note} editable={true} onNoteChange={this.onNoteChange} />
-                <p>Note = {this.state.note}</p>
-
+            <div className="recipe-page">
                 <div className="flex flex-col">
-                    <div className="form-control w-52">
-                        <label className="cursor-pointer label">
-                        <span className="label-text">Mode édition</span> 
-                        <input 
-                            type="checkbox" 
-                            className="toggle toggle-primary"
-                            checked={this.state.toggleEditionMode}
-                            onChange={this.handleToggleEditionMode}
-                            readOnly={false} />
-                        </label>
+                        <div className="form-control w-52 edition-toggle">
+                            <label className="cursor-pointer label">
+                            <span className="label-text">Mode édition</span> 
+                            <input 
+                                type="checkbox" 
+                                className="toggle toggle-primary"
+                                checked={this.state.toggleEditionMode}
+                                onChange={this.handleToggleEditionMode}
+                                readOnly={false} />
+                            </label>
+                        </div>
+                </div>
+                <div className="card card-compact bg-base-100 shadow-xl recipe-card w-9/12">
+                    
+                    <h1 className="chaudron-font text-6xl">{this.state.recipe.name}</h1>
+                    <table>
+                        <tr>
+                            <td className="w-1/2">Note moyenne</td>
+                            <td className="w-1/2"><Stars initialValue={this.state.note} editable={false} onNoteChange={() => {}} /></td>
+                        </tr>
+                        <tr>
+                            <td className="w-1/2">Note personnelle</td>
+                            <td className="w-1/2"><Stars initialValue={this.state.userNote} editable={true} onNoteChange={this.onNoteChange} /></td>
+                        </tr>
+                    </table>
+                    
+                    <hr></hr>
+                    <div class="card-body">
+                        { content }
                     </div>
                 </div>
-
-                { content }
             </div>
+
         )
     }
 
@@ -138,10 +146,10 @@ class Recipe extends React.Component {
         this.forceUpdate()
         this.updateURL()
         
-    }v
+    }
 
     onNoteChange(value) {
-        this.state.note = value
+        this.state.userNote = value
         this.setState(this.state)
     }
 

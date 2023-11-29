@@ -2,3 +2,17 @@
     all: revert;
     text-align: left;
 }
+
+.recipe-page {
+    min-width:100%;
+}
+
+.recipe-card {
+    position: relative;
+    margin: 0 auto;
+}
+
+.edition-toggle {
+    position: relative;
+    right: 0px;
+}
