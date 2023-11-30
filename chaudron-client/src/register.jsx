@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -9,32 +10,52 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [dob, setDob] = useState('');
+  const [passwordError, setPasswordError] = useState('')
+  const [userAlreadyExists, setUserAlreadyExists] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Ajoutez ici la logique pour gérer la soumission du formulaire (inscription côté client).
-    if (password !== confirmPassword) {
-      // Gestion du cas où les mots de passe ne correspondent pas
-      console.error("Les mots de passe ne correspondent pas");
-      return;
-    }
-
-    fetch('/api/custom/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name: username, password: password, email: email, dob: dob }),
-    })
+    fetch('/api/custom/users/verify?username=' + username)
       .then((response) => response.json())
       .then((data) => {
-        // Gérer la réponse du serveur après l'inscription
-        console.log('Utilisateur inscrit avec succès:', data);
-        // Vous pouvez également rediriger l'utilisateur vers la page de connexion
-        navigate('/login');
+        setUserAlreadyExists(data.exists)
+        if (!data.exists) {
+          if (password !== confirmPassword) {
+            console.error("Les mots de passe ne correspondent pas");
+            setPasswordError(true);
+            toast.error("Les mot de passe ne correspondent pas")
+            return
+          } else {
+            setPasswordError(false)
+          }
+          
+          fetch('/api/custom/users/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username, password: password, email: email, dob: dob }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Gérer la réponse du serveur après l'inscription
+              console.log('Utilisateur inscrit avec succès:', data);
+              // Vous pouvez également rediriger l'utilisateur vers la page de connexion
+              //navigate('/login');
+            })
+            .catch((error) => console.error('Erreur lors de l\'inscription', error));
+
+
+        } else {
+          toast.error("Ce nom d'utilisateur est déjà utilisé")
+        }
       })
-      .catch((error) => console.error('Erreur lors de l\'inscription', error));
+      .catch((error) => console.error('Erreur', error));
+  
+    // Ajoutez ici la logique pour gérer la soumission du formulaire (inscription côté client).
+
+ 
   };
 
   return (
@@ -64,7 +85,9 @@ const Register = () => {
               name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+              className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+                userAlreadyExists ? 'user-already-exists' : '' // Applique la classe d'erreur si nécessaire
+              }`}
               required
             />
           </div>
@@ -77,7 +100,9 @@ const Register = () => {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+              className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+                passwordError ? 'password-error' : '' // Applique la classe d'erreur si nécessaire
+              }`}
               required
             />
           </div>
@@ -90,7 +115,9 @@ const Register = () => {
               name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+              className={`w-full p-2 border rounded focus:outline-none focus:border-blue-500 ${
+                passwordError ? 'password-error' : '' // Applique la classe d'erreur si nécessaire
+              }`}
               required
             />
           </div>
@@ -120,6 +147,17 @@ const Register = () => {
           </p>
         </form>
       </div>
+      <style>
+        {`
+          .password-error {
+            border-color: red;
+          }
+
+          .user-already-exists{
+            border-color: red;
+          }
+        `}
+      </style>
     </div>
   );
 };
