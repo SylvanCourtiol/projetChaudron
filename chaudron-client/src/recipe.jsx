@@ -2,6 +2,7 @@ import React from "react";
 import EditableTextarea, {setEditableTextAreaValue, editableTextAreaValue} from "./EditableTextArea";
 import { toast } from 'react-toastify';
 import './recipe.css';
+import Stars from "./stars";
 
 class Recipe extends React.Component { 
 
@@ -13,7 +14,10 @@ class Recipe extends React.Component {
                 id: null,
                 name: "",
                 content: "",
+                
             }, 
+            note: 7,
+            userNote: 10,
             status : 0,
             inputName: "",
             toggleEditionMode : false,
@@ -29,6 +33,7 @@ class Recipe extends React.Component {
         this.handleClick = this.handleClick.bind(this);  
         this.updateURL = this.updateURL.bind(this);  
         this.handleToggleEditionMode = this.handleToggleEditionMode.bind(this); 
+        this.onNoteChange = this.onNoteChange.bind(this);
       }
 
       handleNameInputChange(event) {
@@ -36,6 +41,77 @@ class Recipe extends React.Component {
             this.setState({ ...this.state, inputName: event.target.value})
         }
         
+    }
+
+    render() { 
+        this.state.action = extractActionFromURL()
+        this.state.toggleEditionMode = this.state.action == "write"
+
+        let content = (<h1>Erreur</h1>)
+        if (this.state.action == "read") {
+            content = (
+                <div className="recipe-content" dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
+            )
+        } else {
+            content = (
+                <div>
+                    <input 
+                        className="input input-bordered w-full max-w-xs"
+                        type="text"
+                        value={this.state.inputName}
+                        onChange={this.handleNameInputChange}
+                        placeholder="Entrez le nom de la recette ici"
+                        readOnly={false}
+                        disabled={false}
+                    />
+                    <EditableTextarea
+                        initialValue={""}
+                        onTextChange={() => {}}
+                    /> 
+                    <button onClick={this.handleClick} className="btn btn-active btn-primary">
+                        Enregistrer
+                    </button>
+                </div>
+            )
+        }
+
+        return (
+            <div className="recipe-page">
+                <div className="flex flex-col">
+                        <div className="form-control w-52 edition-toggle">
+                            <label className="cursor-pointer label">
+                            <span className="label-text">Mode édition</span> 
+                            <input 
+                                type="checkbox" 
+                                className="toggle toggle-primary"
+                                checked={this.state.toggleEditionMode}
+                                onChange={this.handleToggleEditionMode}
+                                readOnly={false} />
+                            </label>
+                        </div>
+                </div>
+                <div className="card card-compact bg-base-100 shadow-xl recipe-card w-9/12">
+                    
+                    <h1 className="chaudron-font text-6xl">{this.state.recipe.name}</h1>
+                    <table>
+                        <tr>
+                            <td className="w-1/2">Note moyenne</td>
+                            <td className="w-1/2"><Stars initialValue={this.state.note} editable={false} onNoteChange={() => {}} /></td>
+                        </tr>
+                        <tr>
+                            <td className="w-1/2">Note personnelle</td>
+                            <td className="w-1/2"><Stars initialValue={this.state.userNote} editable={true} onNoteChange={this.onNoteChange} /></td>
+                        </tr>
+                    </table>
+                    
+                    <hr></hr>
+                    <div class="card-body">
+                        { content }
+                    </div>
+                </div>
+            </div>
+
+        )
     }
 
     async componentDidMount() {
@@ -72,88 +148,10 @@ class Recipe extends React.Component {
         
     }
 
-    handleTextChange = (newText) => {
-        // this.setState((prevState) => ({
-        //   recipe: {
-        //     ...prevState.recipe,
-        //     content: newText,
-        //   },
-        // }));
-      };
-
-    render() { 
-        this.state.action = extractActionFromURL()
-        this.state.toggleEditionMode = this.state.action == "write"
-
-        let content = (<h1>Erreur</h1>)
-        if (this.state.action == "read") {
-            content = (
-            <div>
-                <div class="card card-compact w-max bg-base-100 shadow-xl">
-                    <h1>{this.state.recipe.name}</h1>
-                    <hr></hr>
-                    <div class="card-body">
-                    <div className="recipe-content" dangerouslySetInnerHTML={{ __html: this.state.recipe.content }} />
-                    </div>
-                </div>
-            </div>
-            )
-        } else {
-            content = (
-                <div>
-                    <input 
-                        className="input input-bordered w-full max-w-xs"
-                        type="text"
-                        value={this.state.inputName}
-                        onChange={this.handleNameInputChange}
-                        placeholder="Entrez le nom de la recette ici"
-                        readOnly={false}
-                        disabled={false}
-                    />
-                    <EditableTextarea
-                        initialValue={""}
-                        onTextChange={() => {}}
-                    /> 
-                    <button onClick={this.handleClick} className="btn btn-active btn-primary">
-                        Enregistrer
-                    </button>
-                </div>
-            )
-        }
-        return (
-            <div>
-                <div className="rating rating-lg rating-half">
-                    <input type="radio" name="rating-10" className="rating-hidden" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" checked />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-1" />
-                    <input type="radio" name="rating-10" className="bg-green-500 mask mask-star-2 mask-half-2" />
-                </div>
-
-                <div className="flex flex-col">
-                    <div className="form-control w-52">
-                        <label className="cursor-pointer label">
-                        <span className="label-text">Mode édition</span> 
-                        <input 
-                            type="checkbox" 
-                            className="toggle toggle-primary"
-                            checked={this.state.toggleEditionMode}
-                            onChange={this.handleToggleEditionMode}
-                            readOnly={false} />
-                        </label>
-                    </div>
-                </div>
-
-                { content }
-            </div>
-        )
-    } 
+    onNoteChange(value) {
+        this.state.userNote = value
+        this.setState(this.state)
+    }
 
     handleToggleEditionMode() {
         this.state.toggleEditionMode = !this.state.toggleEditionMode

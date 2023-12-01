@@ -1,6 +1,7 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 
 import * as RecipeService from './RecipeService.mjs'
 
@@ -268,14 +269,20 @@ app.post('/api/custom/users/authentification', async function (request, response
     }
 })
 
-app.post('/api/custom/users', async function (request, response) {
+app.post('/api/custom/users/add', async function (request, response) {
     try {
-        if (!request.body || !request.body.name || request.body.length === 0) {
+        if (!request.body || !request.body.username || request.body.length === 0) {
             response.statusCode = 400
             response.send('Bad request')
             return
         }
-        const toCreate = { name: request.body.name }
+        const hashedPwd = await bcrypt.hash(request.body.password, 10);
+        const toCreate = { 
+            username: request.body.username, 
+            password: hashedPwd, 
+            mail: request.body.email, 
+            birthdate: request.body.dob +'T00:00:00Z'
+        };
     
         const user = await RecipeService.createUser(toCreate)
     
@@ -293,6 +300,17 @@ app.post('/api/custom/users', async function (request, response) {
         return
     }
 
+})
+
+app.get('/api/custom/users/verify', async function (request, response) {
+    const username = request.query.username;
+    if (!username || username.length === 0) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    response.send({'exists' : await RecipeService.verifyUser(username) != null});
 })
 
 //#endregion Users

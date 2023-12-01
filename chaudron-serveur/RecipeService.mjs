@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { marked, use } from 'marked';
+import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
@@ -142,6 +143,19 @@ export async function createOrUpdateUserRecipeMark(recipeId, userId, mark) {
 
 //#region Users
 
+export async function verifyUser(name) {
+    const user = await prisma.User.findFirst({
+        where: {
+            username: name,
+        }
+    })
+
+    if (user) {
+        return user;
+    }
+    return null;
+}
+
 export async function getUser(name, pwd) {
     const user = await prisma.User.findFirst({
         where: {
@@ -152,21 +166,27 @@ export async function getUser(name, pwd) {
         return null; //utilisateur non trouvé
     }
 
-    if (pwd === user.password) {
-        delete user.password
-        console.log(user)
-        return user;
-    } else {
-        return null;
-    }
-
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(pwd, user.password)
+        .then((isMatch) => {
+            console.log(isMatch)
+            if (isMatch) {
+                console.log('hihihi')
+                delete user.password;
+                console.log(user);
+                return user;
+            } else {
+                return null;
+            }
+        })
+        .catch((error) => {
+            reject(error);
+        });
+    });
 }
 
 export async function createUser(toCreate) {
-
-    if (await getUser(toCreate.name) !== null) {
-        throw "Already exists"
-    }
+    console.log(toCreate)
     const user = await prisma.User.create({
         data: toCreate,
     })
