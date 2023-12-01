@@ -26,7 +26,7 @@ const Login = () => {
     .catch((error) => console.error('Utilisateur non inscrit', error));
     console.log('Nom d\'utilisateur:', username);
     console.log('Mot de passe:', password);
-    //navigate('/');
+    navigate('/');
 
   };
 
