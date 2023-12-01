@@ -28,7 +28,7 @@ class Recipe extends React.Component {
             toggleEditionMode : false,
         }   
         
-        this.state.user = { id: 5, username: "dakou"} // TODO enlever
+        //this.state.user = { id: 5, username: "dakou"} // TODO enlever
 
         this.recipe_id = extractRecipeIdFromURL()
 
@@ -62,20 +62,26 @@ class Recipe extends React.Component {
             )
         } else {
             content = (
-                <div>
-                    <input 
-                        className="input input-bordered w-full max-w-xs"
-                        type="text"
-                        value={this.state.inputName}
-                        onChange={this.handleNameInputChange}
-                        placeholder="Entrez le nom de la recette ici"
-                        readOnly={false}
-                        disabled={false}
-                    />
-                    <EditableTextarea
-                        initialValue={""}
-                        onTextChange={() => {}}
-                    /> 
+                <div className="w-full">
+                    <label className="cursor-pointer label w-full label flex flex-col">
+                        <span className="label-text">Nom de la recette</span> 
+                        <input 
+                            className="input input-bordered w-full max-w-xs"
+                            type="text"
+                            value={this.state.inputName}
+                            onChange={this.handleNameInputChange}
+                            placeholder="Entrez le nom de la recette ici"
+                            readOnly={false}
+                            disabled={false}
+                        />
+                    </label>
+                    <label className="cursor-pointer label flex flex-col">
+                        <span className="label-text">Contenu de la page (format markdown supporté)</span>
+                        <EditableTextarea
+                            initialValue={""}
+                            onTextChange={() => {}}
+                        />
+                    </label>
                     <button onClick={this.handleClick} className="btn btn-active btn-primary">
                         Enregistrer
                     </button>

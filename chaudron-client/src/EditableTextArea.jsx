@@ -17,7 +17,7 @@ const EditableTextarea = ({ initialValue, onTextChange }) => {
         className="textarea textarea-bordered"
         value={editableTextAreaValue}
         onChange={handleTextChange}
-        rows="4"
+        rows="20"
         cols="50"
         readOnly={false}
       />
