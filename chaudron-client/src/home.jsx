@@ -22,7 +22,7 @@ function Home() {
       <ul>
         {recipes.map((recipe) => (
           <li key={recipe.id}>
-            <a href={`/recipe/${recipe.id}`} className="recipe-link">
+            <a href={`/recettes/${recipe.id}`} className="recipe-link">
             <span className="recipe-name">{recipe.name}</span>
             </a>
           </li>

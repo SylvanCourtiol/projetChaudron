@@ -207,14 +207,16 @@ app.get('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
         response.send('Bad request')
         return
     }
+    try {
+        const mark = await RecipeService.getUserRecipeMark(recipeId, userId)
+        mark.recipeId = recipeId
+        mark.userId = userId
 
-    const recipe = await RecipeService.getUserRecipeMark(recipeId, userId)
-
-    if (recipe !== null) {
-        response.send(recipe)
-    } else {
+        response.send(mark)
+    } catch (e) {
         response.statusCode = 404
         response.send('Not found')
+        return
     }
 })
 
@@ -228,7 +230,7 @@ app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
         return
     }
     const mark = request.body.mark
-    if (!Number.isInteger(mark) || mark < 0 || mark > 5) {
+    if (!Number.isInteger(mark) || mark < 0 || mark > 10) {
         response.statusCode = 400
         response.send('Bad request')
         return

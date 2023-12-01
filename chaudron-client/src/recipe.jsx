@@ -3,26 +3,33 @@ import EditableTextarea, {setEditableTextAreaValue, editableTextAreaValue} from 
 import { toast } from 'react-toastify';
 import './recipe.css';
 import Stars from "./stars";
+import { connectedUser } from "./login";
 
 class Recipe extends React.Component { 
 
     constructor () {
         super()
         this.state = {
-            action: "write",
+            action: "read",
             recipe : {
                 id: null,
                 name: "",
                 content: "",
                 
             }, 
-            note: 7,
-            userNote: 10,
+            user: connectedUser(),
+            note: 5,
+            userNote: 5,
             status : 0,
+            noteStatus : 0,
+            userNoteStatus: 0,
+            userNoteUpdateStatus: 0,
             inputName: "",
             toggleEditionMode : false,
         }   
         
+        this.state.user = { id: 5, username: "dakou"} // TODO enlever
+
         this.recipe_id = extractRecipeIdFromURL()
 
         document.title = 'Chargement... | Recettes Chaudron';
@@ -34,6 +41,7 @@ class Recipe extends React.Component {
         this.updateURL = this.updateURL.bind(this);  
         this.handleToggleEditionMode = this.handleToggleEditionMode.bind(this); 
         this.onNoteChange = this.onNoteChange.bind(this);
+        this.getAverageMark = this.getAverageMark.bind(this);
       }
 
       handleNameInputChange(event) {
@@ -44,7 +52,7 @@ class Recipe extends React.Component {
     }
 
     render() { 
-        this.state.action = extractActionFromURL()
+        this.state.action = this.state.user ? extractActionFromURL() : "read"
         this.state.toggleEditionMode = this.state.action == "write"
 
         let content = (<h1>Erreur</h1>)
@@ -75,9 +83,19 @@ class Recipe extends React.Component {
             )
         }
 
+        let notePersonnelle = ""
+        if (this.state.user) {
+            notePersonnelle = (
+                <tr>
+                    <td className="w-1/2">Note personnelle</td>
+                    <td className="w-1/2"><Stars initialValue={this.state.userNote} editable={true} onNoteChange={this.onNoteChange} /></td>
+                </tr>
+            )
+        }
+
         return (
             <div className="recipe-page">
-                <div className="flex flex-col">
+                <div className="flex flex-row">
                         <div className="form-control w-52 edition-toggle">
                             <label className="cursor-pointer label">
                             <span className="label-text">Mode édition</span> 
@@ -86,26 +104,32 @@ class Recipe extends React.Component {
                                 className="toggle toggle-primary"
                                 checked={this.state.toggleEditionMode}
                                 onChange={this.handleToggleEditionMode}
-                                readOnly={false} />
+                                readOnly={false}
+                                disabled={this.state.user == null} />
                             </label>
                         </div>
+                        {
+                            this.state.user ? "" 
+                            : <div className="inline-block">
+                                <div className="flex items-center w-full h-full">
+                                <p className="text-xs text-slate-500">Connexion requise pour activer le mode édition.</p>
+                                </div>
+                            </div>
+                        }
                 </div>
                 <div className="card card-compact bg-base-100 shadow-xl recipe-card w-9/12">
                     
                     <h1 className="chaudron-font text-6xl">{this.state.recipe.name}</h1>
-                    <table>
+                    <table><tbody>
                         <tr>
                             <td className="w-1/2">Note moyenne</td>
                             <td className="w-1/2"><Stars initialValue={this.state.note} editable={false} onNoteChange={() => {}} /></td>
                         </tr>
-                        <tr>
-                            <td className="w-1/2">Note personnelle</td>
-                            <td className="w-1/2"><Stars initialValue={this.state.userNote} editable={true} onNoteChange={this.onNoteChange} /></td>
-                        </tr>
-                    </table>
+                        {notePersonnelle}
+                    </tbody></table>
                     
                     <hr></hr>
-                    <div class="card-body">
+                    <div className="card-body">
                         { content }
                     </div>
                 </div>
@@ -115,45 +139,96 @@ class Recipe extends React.Component {
     }
 
     async componentDidMount() {
-        if (this.state.action == "read") {
-            try {
-                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/html")
-                const recipe = await fetched.json();
-                this.state = { ...this.state, recipe: recipe, status: fetched.status }
-                this.setState(this.state)
-            } catch (e) {
-                console.log(e)
-                this.state = { ...this.state, status : 1000 }
-                this.setState(this.state)
-            }
-        } else { // write
-            try {
-                const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=text/markdown")
-                const recipe = await fetched.json();
+        try {
+            const contentType = this.state.action == "read" ? "text/html" : "text/markdown"
+            const fetched  = await fetch("/api/custom/recipes/" + this.recipe_id + "?contentType=" + contentType)
+            const recipe = await fetched.json()
 
-                this.state = { ...this.state, recipe: recipe, status: fetched.status, inputName: recipe.name }
-                this.setState(this.state)
+            this.state = { ...this.state, recipe: recipe, status: fetched.status, inputName: recipe.name }
+            this.setState(this.state)
+            if (this.state.action == "write") {
                 setEditableTextAreaValue(recipe.content)
-                
-            } catch (e) {
-                console.log(e)
-                this.state = { ...this.state, status : 1000 }
-                this.setState(this.state)
-                
             }
             
-        }
+        } catch (e) {
+            this.state = { ...this.state, status : 1000 }
+            this.setState(this.state)
+            
+        } 
+        await this.getAverageMark()
+        await this.getUserMark()
         this.forceUpdate()
         this.updateURL()
         
     }
 
-    onNoteChange(value) {
+    async getAverageMark() {
+        if (!this.state.recipe.id) {
+            return
+        }
+        try {
+            const fetched  = await fetch("/api/custom/recipesMarks/" + this.recipe_id)
+            const recipeMark = await fetched.json()
+            this.state.noteStatus = fetched.status
+            this.state.note = recipeMark.mark || 0
+        } catch (e) {
+            this.state.noteStatus = 1000
+        }
+        this.setState(this.state)
+        
+    }
+
+    async getUserMark() {
+        if (!this.state.recipe.id) {
+            return
+        }
+        try {
+            const fetched  = await fetch("/api/custom/recipesMarks/" + this.recipe_id + "/" + this.state.user.id)
+            let recipeMark = {mark:null}
+            if (fetched.status < 400) {
+                recipeMark = await fetched.json()
+            }
+            this.state.userNoteStatus = fetched.status
+            this.state.userNote = recipeMark.mark || 0
+        } catch (e) {
+            this.state.userNoteStatus = 1000
+        }
+        this.setState(this.state)
+        
+    }
+
+    async onNoteChange(value) {
+        // Maj état local
         this.state.userNote = value
+        this.setState(this.state)
+
+        // Maj côté API
+        const body = JSON.stringify({ mark: parseInt(this.state.userNote) })
+        try {
+            const fetched = await fetch("/api/custom/recipesMarks/" + this.recipe_id + "/" + this.state.user.id, {
+                method: "PUT",
+                body: body,
+                headers: {
+                    "Content-Type": "application/json",
+                  },
+            })
+            this.state.userNoteUpdateStatus = fetched.status
+        } catch (e) {
+            this.state.userNoteUpdateStatus = 1000
+        }
+        if (this.state.userNoteUpdateStatus < 400) {
+            toast.success("Merci d'avoir noté cette recette !")
+            this.getAverageMark()
+        } else {
+            toast.error("Echec de la mise à jour de votre note.")
+        }
         this.setState(this.state)
     }
 
     handleToggleEditionMode() {
+        if (!this.state.user) {
+            return
+        }
         this.state.toggleEditionMode = !this.state.toggleEditionMode
         this.state.action = this.state.toggleEditionMode ? "write" : "read"
         this.setState(this.state)
