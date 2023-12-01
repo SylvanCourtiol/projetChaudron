@@ -83,7 +83,7 @@ const Login = () => {
 export function connectedUser() {
   const user = sessionStorage.getItem('username')
   const token = sessionStorage.getItem('id')
-  const id = sessionStroage.getItem('token')
+  const id = sessionStorage.getItem('token')
   const credentials = {user, token, id}
   if ( user && token && id) {
     return credentials
