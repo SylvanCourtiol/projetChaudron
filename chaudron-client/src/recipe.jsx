@@ -291,7 +291,6 @@ class Recipe extends React.Component {
             method: "DELETE",
         })
         if (fetched.status < 400) {
-            toast.success('Réussite de la suppression.')
             window.location.href = '/';
         } else {
             toast.error('Echec de la suppresion.')
