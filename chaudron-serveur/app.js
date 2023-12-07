@@ -260,6 +260,7 @@ app.post('/api/custom/users/authentification', async function (request, response
     }
 
     const user = await RecipeService.getUser(username, password)
+    console.log(user)
 
     if (user !== null) {
         const token = jwt.sign(user, secretKey, {expiresIn: '2h'})

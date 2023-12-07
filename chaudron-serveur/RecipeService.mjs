@@ -171,12 +171,10 @@ export async function getUser(name, pwd) {
         .then((isMatch) => {
             console.log(isMatch)
             if (isMatch) {
-                console.log('hihihi')
                 delete user.password;
-                console.log(user);
-                return user;
+                resolve(user)
             } else {
-                return null;
+                resolve(null);
             }
         })
         .catch((error) => {
