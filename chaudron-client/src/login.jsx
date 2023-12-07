@@ -22,12 +22,9 @@ const Login = () => {
       sessionStorage.setItem('token', data.token);
       sessionStorage.setItem('id', data.id)
       sessionStorage.setItem('username', data.username)
+      navigate('/');
     })
     .catch((error) => console.error('Utilisateur non inscrit', error));
-    console.log('Nom d\'utilisateur:', username);
-    console.log('Mot de passe:', password);
-    navigate('/');
-
   };
 
   return (
@@ -82,8 +79,8 @@ const Login = () => {
 
 export function connectedUser() {
   const user = sessionStorage.getItem('username')
-  const token = sessionStorage.getItem('id')
-  const id = sessionStorage.getItem('token')
+  const token = sessionStorage.getItem('token')
+  const id = sessionStorage.getItem('id')
   const credentials = {user, token, id}
   if ( user && token && id) {
     return credentials
