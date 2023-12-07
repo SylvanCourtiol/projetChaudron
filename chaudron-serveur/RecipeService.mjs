@@ -83,6 +83,14 @@ export async function updateRecipe(id, toUpdate) {
     })
 }
 
+export async function deleteRecipe(id) {
+    const recipe = await prisma.Recipe.delete({
+        where: {
+            id: id,
+        },
+    })
+}
+
 //#endregion Recipes
 
 //#region Marks

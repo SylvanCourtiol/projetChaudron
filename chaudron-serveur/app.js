@@ -149,6 +149,31 @@ app.patch('/api/custom/recipes/:id', async function (request, response) {
     
 })
 
+app.delete('/api/custom/recipes/:id', async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (id === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    let recipe = null
+    try {
+        recipe = await RecipeService.deleteRecipe(id)  
+    } catch (e) {
+        // empty body
+        console.log(e)
+    }
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+    
+})
+
 //#endregion Recipes
 
 //#region Marks
