@@ -1,35 +1,19 @@
-import logo from "../public/ChaudronLogo.png"
+import React from 'react';
+import logo from "../public/ChaudronLogo.png";
+
 function Footer() {
-    return (
-        <>
-            <footer className="footer p-10 bg-base-200 text-base-content">
-                <aside>
-                    <img width="100" height="100" src={logo}/>
-                    <p>Projet Chaudron</p>
-                </aside>
-                <nav>
-                    <header className="footer-title">Services</header>
-                    <a className="link link-hover">Branding</a>
-                    <a className="link link-hover">Design</a>
-                    <a className="link link-hover">Marketing</a>
-                    <a className="link link-hover">Advertisement</a>
-                </nav>
-                <nav>
-                    <header className="footer-title">Company</header>
-                    <a className="link link-hover">About us</a>
-                    <a className="link link-hover">Contact</a>
-                    <a className="link link-hover">Jobs</a>
-                    <a className="link link-hover">Press kit</a>
-                </nav>
-                <nav>
-                    <header className="footer-title">Legal</header>
-                    <a className="link link-hover">Terms of use</a>
-                    <a className="link link-hover">Privacy policy</a>
-                    <a className="link link-hover">Cookie policy</a>
-                </nav>
-            </footer>
-        </>
-    )
+  return (
+    <>
+      <div className="bg-base-10 p-10 flex justify-between items-center">
+        <img src={logo} alt="Logo" className="max-w-10 h-20" />
+        <div className="text-center">
+          <p className="text-sm">Sylvan Courtiol, Quentin Coignus, Kylian Margaillan</p>
+          <p className="text-sm">© 2023 Chaudron</p>
+          <p className="text-sm italic">Toute ressemblance avec un autre site de recettes est purement fortuite et strictement non intentionnelle</p>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default Footer
+export default Footer;
