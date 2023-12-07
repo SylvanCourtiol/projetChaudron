@@ -83,35 +83,6 @@ app.get('/api/custom/recipes/:id/content', async function (request, response) {
         response.send('Not found')
     }
 })
-//creation d'une nouvelle recette et renvoie de son id
-app.post('/api/custom/recipes/create', async function (request, response) {
-
-    if (!request.body || !request.body.name || !request.body.content) {
-        console.error('Erreur lors de la création de la recette ici' )
-        response.statusCode = 400
-        response.send('Bad request')
-        return
-    }
-
-    const name = request.body.name || '';
-      
-    const content = request.body.content || '';
-
-
-    const toCreate = {
-        name: name,
-        markdown: content,
-    }
-
-    const recipe = await RecipeService.createRecipe(toCreate)
-
-    if (recipe !== null) {
-        response.send({ recipeId: recipe.id })
-    } else {
-        response.statusCode = 400
-        response.send('Bad request')
-    }
-})
 
 app.post('/api/custom/recipes', async function (request, response) {
 
@@ -163,14 +134,44 @@ app.patch('/api/custom/recipes/:id', async function (request, response) {
         return
     }
 
-    const recipe = await RecipeService.updateRecipe(id, toUpdate)
-
+    let recipe = null
+    try {
+        recipe = await RecipeService.updateRecipe(id, toUpdate)  
+    } catch (e) {
+        // empty body
+    }
     if (recipe !== null) {
         response.send(recipe)
     } else {
         response.statusCode = 400
         response.send('Bad request')
     }
+    
+})
+
+app.delete('/api/custom/recipes/:id', async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (id === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    let recipe = null
+    try {
+        recipe = await RecipeService.deleteRecipe(id)  
+    } catch (e) {
+        // empty body
+        console.log(e)
+    }
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+    
 })
 
 //#endregion Recipes

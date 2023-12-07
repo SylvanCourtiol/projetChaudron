@@ -10,13 +10,13 @@ function Header() {
     const handleNewRecipeClick = async () => {
       try {
         // Appel à la route sur le serveur pour créer une nouvelle recette
-        const response = await fetch('/api/custom/recipes/create', {
+        const response = await fetch('/api/custom/recipes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: ' Ma nouvelle recette',
+            name: 'Ma nouvelle recette',
             content: 'Ajoutez ici le contenu de votre recette',
           }),
         });
@@ -25,10 +25,10 @@ function Header() {
     
         if (response.ok) {
           // Récupération de l'ID de la nouvelle recette
-          const { recipeId } = await response.json();
+          const recipe = await response.json();
     
           // Redirection vers la page de la nouvelle recette
-          navigate(`/recettes/${recipeId}`);
+          navigate(`/recettes/${recipe.id}`);
         } else {
           console.error('Erreur lors de la création de la recette');
         }

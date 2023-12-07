@@ -27,6 +27,7 @@ class Recipe extends React.Component {
             inputName: "",
             toggleEditionMode : false,
         }   
+
         
         //this.state.user = { id: 5, username: "dakou"} // TODO enlever
 
@@ -37,23 +38,31 @@ class Recipe extends React.Component {
 
         // Pour que les fonctions soit dans le bon contexte de this
         this.handleNameInputChange = this.handleNameInputChange.bind(this);
-        this.handleClick = this.handleClick.bind(this);  
+        this.handleSaveClick = this.handleSaveClick.bind(this);  
         this.updateURL = this.updateURL.bind(this);  
         this.handleToggleEditionMode = this.handleToggleEditionMode.bind(this); 
         this.onNoteChange = this.onNoteChange.bind(this);
         this.getAverageMark = this.getAverageMark.bind(this);
-      }
-
-      handleNameInputChange(event) {
-        if (this.setState !== undefined) {
-            this.setState({ ...this.state, inputName: event.target.value})
-        }
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);
         
     }
 
-    render() { 
+    render() {
         this.state.action = this.state.user ? extractActionFromURL() : "read"
         this.state.toggleEditionMode = this.state.action == "write"
+
+        if (this.state.status >= 400) {
+            return (
+                <div className="m-2">
+                    <div className="card card-compact bg-base-100 shadow-xl recipe-card w-9/12">
+                        <div className="card-body">
+                            Erreur lors du chargement de la recette.
+                        </div>
+                    </div>
+                    
+                </div>
+            )
+        }
 
         let content = (<h1>Erreur</h1>)
         if (this.state.action == "read") {
@@ -82,7 +91,10 @@ class Recipe extends React.Component {
                             onTextChange={() => {}}
                         />
                     </label>
-                    <button onClick={this.handleClick} className="btn btn-active btn-primary">
+                    <button onClick={this.handleDeleteClick} className="btn btn-active btn-secondary m-2">
+                        Supprimer
+                    </button>
+                    <button onClick={this.handleSaveClick} className="btn btn-active btn-primary m-2">
                         Enregistrer
                     </button>
                 </div>
@@ -160,7 +172,7 @@ class Recipe extends React.Component {
             this.state = { ...this.state, status : 1000 }
             this.setState(this.state)
             
-        } 
+        }
         await this.getAverageMark()
         await this.getUserMark()
         this.forceUpdate()
@@ -242,7 +254,13 @@ class Recipe extends React.Component {
         this.componentDidMount()
     }
 
-    async handleClick() {
+    handleNameInputChange(event) {
+        if (this.setState !== undefined) {
+            this.setState({ ...this.state, inputName: event.target.value})
+        } 
+    }
+
+    async handleSaveClick() {
 
         const recipe_id = extractRecipeIdFromURL()
 
@@ -256,7 +274,7 @@ class Recipe extends React.Component {
                 name: this.state.inputName,
             }),
         })
-        if (this.state.status < 400) {
+        if (fetched.status < 400) {
             toast.success('Succès de la mise à jour.')
         } else {
             toast.error('Echec de la mise à jour.')
@@ -264,6 +282,22 @@ class Recipe extends React.Component {
 
         await this.componentDidMount()
         this.updateURL()
+    }
+
+    async handleDeleteClick() {
+        const recipe_id = extractRecipeIdFromURL()
+
+        const fetched  = await fetch("/api/custom/recipes/" + recipe_id, {
+            method: "DELETE",
+        })
+        if (fetched.status < 400) {
+            toast.success('Réussite de la suppression.')
+            window.location.href = '/';
+        } else {
+            toast.error('Echec de la suppresion.')
+            await this.componentDidMount()
+            this.updateURL()
+        }
     }
 
     updateURL() {
@@ -293,6 +327,5 @@ function extractActionFromURL() {
     const paramValue = queryParams.get('action')
     return paramValue == "write" ? "write" : "read"
 }
-
 
 export default Recipe
