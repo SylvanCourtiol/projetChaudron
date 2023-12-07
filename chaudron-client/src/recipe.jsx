@@ -55,6 +55,19 @@ class Recipe extends React.Component {
         this.state.action = this.state.user ? extractActionFromURL() : "read"
         this.state.toggleEditionMode = this.state.action == "write"
 
+        if (this.state.status >= 400) {
+            return (
+                <div className="m-2">
+                    <div className="card card-compact bg-base-100 shadow-xl recipe-card w-9/12">
+                        <div className="card-body">
+                            Erreur lors du chargement de la recette.
+                        </div>
+                    </div>
+                    
+                </div>
+            )
+        }
+
         let content = (<h1>Erreur</h1>)
         if (this.state.action == "read") {
             content = (
@@ -160,7 +173,7 @@ class Recipe extends React.Component {
             this.state = { ...this.state, status : 1000 }
             this.setState(this.state)
             
-        } 
+        }
         await this.getAverageMark()
         await this.getUserMark()
         this.forceUpdate()
