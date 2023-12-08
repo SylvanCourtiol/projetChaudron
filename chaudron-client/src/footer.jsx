@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from "../public/ChaudronLogo.png";
+import logo from "./assets/ChaudronLogo.png";
 
 function Footer() {
   return (

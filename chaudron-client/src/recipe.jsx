@@ -201,7 +201,11 @@ class Recipe extends React.Component {
             return
         }
         try {
-            const fetched  = await fetch("/api/custom/recipesMarks/" + this.recipe_id + "/" + this.state.user.id)
+            const fetched  = await fetch("/api/custom/recipesMarks/" + this.recipe_id + "/" + this.state.user.id, {
+                headers: {
+                    'Authorization': `Bearer ${this.state.user ? this.state.user.token : ''}`
+                }
+            })
             let recipeMark = {mark:null}
             if (fetched.status < 400) {
                 recipeMark = await fetched.json()
@@ -228,6 +232,7 @@ class Recipe extends React.Component {
                 body: body,
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': `Bearer ${this.state.user ? this.state.user.token : ''}`
                   },
             })
             this.state.userNoteUpdateStatus = fetched.status
@@ -268,6 +273,7 @@ class Recipe extends React.Component {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${this.state.user ? this.state.user.token : ''}`
             },
             body: JSON.stringify({
                 content: editableTextAreaValue,
@@ -289,6 +295,9 @@ class Recipe extends React.Component {
 
         const fetched  = await fetch("/api/custom/recipes/" + recipe_id, {
             method: "DELETE",
+            headers: {
+                'Authorization': `Bearer ${this.state.user ? this.state.user.token : ''}`
+            }
         })
         if (fetched.status < 400) {
             window.location.href = '/';

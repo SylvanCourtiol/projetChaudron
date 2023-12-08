@@ -177,7 +177,6 @@ export async function getUser(name, pwd) {
     return new Promise((resolve, reject) => {
         bcrypt.compare(pwd, user.password)
         .then((isMatch) => {
-            console.log(isMatch)
             if (isMatch) {
                 delete user.password;
                 resolve(user)
@@ -192,7 +191,6 @@ export async function getUser(name, pwd) {
 }
 
 export async function createUser(toCreate) {
-    console.log(toCreate)
     const user = await prisma.User.create({
         data: toCreate,
     })

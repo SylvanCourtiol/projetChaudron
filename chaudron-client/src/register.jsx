@@ -39,10 +39,7 @@ const Register = () => {
           })
             .then((response) => response.json())
             .then((data) => {
-              // Gérer la réponse du serveur après l'inscription
               console.log('Utilisateur inscrit avec succès:', data);
-              // Vous pouvez également rediriger l'utilisateur vers la page de connexion
-              //navigate('/login');
             })
             .catch((error) => console.error('Erreur lors de l\'inscription', error));
 
@@ -51,11 +48,7 @@ const Register = () => {
           toast.error("Ce nom d'utilisateur est déjà utilisé")
         }
       })
-      .catch((error) => console.error('Erreur', error));
-  
-    // Ajoutez ici la logique pour gérer la soumission du formulaire (inscription côté client).
-
- 
+      .catch((error) => console.error('Erreur', error)); 
   };
 
   return (

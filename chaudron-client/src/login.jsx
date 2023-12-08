@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Login = () => {
 
@@ -18,13 +19,17 @@ const Login = () => {
     })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data)
       sessionStorage.setItem('token', data.token);
       sessionStorage.setItem('id', data.id)
       sessionStorage.setItem('username', data.username)
       navigate('/');
     })
-    .catch((error) => console.error('Utilisateur non inscrit', error));
+    .catch((error) => {
+      console.error('Utilisateur non inscrit', error)
+      toast.error('Nom d\'utilisateur ou mot de passe invalide, recommencez.')
+      setPassword('')
+      setUsername('')
+    });
   };
 
   return (
@@ -61,7 +66,6 @@ const Login = () => {
 
           <button
             type="submit"
-            //className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full"
           >
             Se connecter

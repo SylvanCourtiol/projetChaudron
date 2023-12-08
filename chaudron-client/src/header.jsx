@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from "../public/ChaudronHorizontalLogo.png"
+import logo from "./assets/ChaudronHorizontalLogo.png"
 import LogButtons from './logButtons';
+import { connectedUser } from './login';
 
 function Header() {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ function Header() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${connectedUser() ? connectedUser().token : ''}`
           },
           body: JSON.stringify({
             name: 'Ma nouvelle recette',

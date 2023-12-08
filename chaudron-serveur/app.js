@@ -1,13 +1,28 @@
 import express from 'express'
-import jwt from 'jsonwebtoken'
-import crypto from 'crypto'
 import bcrypt from 'bcrypt'
 
 import * as RecipeService from './RecipeService.mjs'
+import { generateToken, verifyToken } from './AuthentificationService.mjs'
 
 const app = express()
 
 app.use(express.json());
+
+async function verifyAuthorization(req, res, next) {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(403).json({ message: 'Token manquant' });
+    }
+
+    const user = await verifyToken(token)
+    if (user) {
+        req.user = user
+        next();
+    } else {
+        return res.status(401).json({ message: 'Token invalide' });
+    }
+}
 
 //#region Recipes
 
@@ -45,7 +60,6 @@ app.get('/api/custom/recipes/:id', async function (request, response) {
     const recipe = await RecipeService.getRecipeById(id, options)
 
     if (recipe !== null) {
-        console.log(recipe)
         response.send(recipe)
     } else {
         response.statusCode = 404
@@ -84,7 +98,7 @@ app.get('/api/custom/recipes/:id/content', async function (request, response) {
     }
 })
 
-app.post('/api/custom/recipes', async function (request, response) {
+app.post('/api/custom/recipes', verifyAuthorization, async function (request, response) {
 
     if (!request.body || !request.body.name || !request.body.content) {
         response.statusCode = 400
@@ -107,7 +121,7 @@ app.post('/api/custom/recipes', async function (request, response) {
     }
 })
 
-app.patch('/api/custom/recipes/:id', async function (request, response) {
+app.patch('/api/custom/recipes/:id', verifyAuthorization, async function (request, response) {
     const id = parseInt(request.params.id)
     if (id === NaN) {
         // problème
@@ -149,7 +163,7 @@ app.patch('/api/custom/recipes/:id', async function (request, response) {
     
 })
 
-app.delete('/api/custom/recipes/:id', async function (request, response) {
+app.delete('/api/custom/recipes/:id', verifyAuthorization, async function (request, response) {
     const id = parseInt(request.params.id)
     if (id === NaN) {
         // problème
@@ -199,7 +213,7 @@ app.get('/api/custom/recipesMarks/:recipeId', async function (request, response)
     }
 })
 
-app.get('/api/custom/recipesMarks/:recipeId/:userId', async function (request, response) {
+app.get('/api/custom/recipesMarks/:recipeId/:userId', verifyAuthorization, async function (request, response) {
     const recipeId = parseInt(request.params.recipeId)
     const userId = parseInt(request.params.userId)
     if (recipeId === NaN || userId === NaN) {
@@ -221,7 +235,7 @@ app.get('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
     }
 })
 
-app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, response) {
+app.put('/api/custom/recipesMarks/:recipeId/:userId', verifyAuthorization, async function (request, response) {
     const recipeId = parseInt(request.params.recipeId)
     const userId = parseInt(request.params.userId)
     if (recipeId === NaN || userId === NaN) {
@@ -250,8 +264,6 @@ app.put('/api/custom/recipesMarks/:recipeId/:userId', async function (request, r
 //#endregion Marks
 
 //#region Users
-
-const secretKey = crypto.randomBytes(64).toString('hex');
 app.post('/api/custom/users/authentification', async function (request, response) {
     const { username, password } = request.body
     if (!username || ! password || username.length === 0 || password.length === 0) {
@@ -261,10 +273,9 @@ app.post('/api/custom/users/authentification', async function (request, response
     }
 
     const user = await RecipeService.getUser(username, password)
-    console.log(user)
 
     if (user !== null) {
-        const token = jwt.sign(user, secretKey, {expiresIn: '2h'})
+        const token = generateToken(user);
         user.token = token
         response.send(user)
     } else {
