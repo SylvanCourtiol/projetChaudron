@@ -37,11 +37,13 @@ function NewRecipeButton() {
       }
     };
 
+    const authentificationRequiredMessage = connectedUser() ? "" : (<p className="text-xs text-slate-500">Connexion requise pour ajouter une nouvelle recette.</p>)
     return (
       <>
-        <button onClick={handleNewRecipeClick} className="btn normal-case text-xl mr-4">
+        <button onClick={handleNewRecipeClick} className="btn normal-case text-xl mr-4" disabled={connectedUser() == null}>
             <span className='text-slate-500 text-3xl'>+</span> Ajouter une nouvelle recette
         </button>
+        {authentificationRequiredMessage}
       </>
     );
   }
