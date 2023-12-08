@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Stars from './stars';
+import { Helmet } from 'react-helmet';
 
 function Home() {
 
@@ -29,6 +30,9 @@ function Home() {
 
   return (
     <div className="content">
+      <Helmet>
+        <title>Accueil - Chaudron</title>
+      </Helmet>
       <ul>
         {recipes.map((recipe) => (
           <li key={recipe.id}>

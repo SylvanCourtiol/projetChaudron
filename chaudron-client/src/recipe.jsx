@@ -209,6 +209,8 @@ class Recipe extends React.Component {
             let recipeMark = {mark:null}
             if (fetched.status < 400) {
                 recipeMark = await fetched.json()
+            } else if (fetched.status == 404) {
+                recipeMark.mark = 0
             }
             this.state.userNoteStatus = fetched.status
             this.state.userNote = recipeMark.mark || 0
@@ -312,7 +314,7 @@ class Recipe extends React.Component {
         let url = "/recettes/" + this.recipe_id;
         if (this.state.recipe.name && this.state.recipe.name.length > 0) {
             url += "/" + this.state.recipe.name
-            document.title = this.state.recipe.name + ' | Recettes Chaudron';
+            document.title = this.state.recipe.name + ' - Chaudron';
         }
         if (this.state.action == "write") {
             url += "?action=write"

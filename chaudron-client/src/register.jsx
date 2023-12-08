@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -53,6 +54,10 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
+      <Helmet>
+        <title>Inscription - Chaudron</title>
+      </Helmet>
+
       <div className="bg-white p-8 rounded shadow-md grid grid-cols-1 gap-6 max-w-sm w-full">
         <h2 className="text-3xl font-semibold text-center">Inscription</h2>
 
