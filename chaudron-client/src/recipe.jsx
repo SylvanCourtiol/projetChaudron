@@ -18,8 +18,8 @@ class Recipe extends React.Component {
                 
             }, 
             user: connectedUser(),
-            note: 5,
-            userNote: 5,
+            note: 0,
+            userNote: 0,
             status : 0,
             noteStatus : 0,
             userNoteStatus: 0,
