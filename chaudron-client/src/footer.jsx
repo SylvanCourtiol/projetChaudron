@@ -9,7 +9,7 @@ function Footer() {
         <div className="text-center">
           <p className="text-sm">Sylvan Courtiol, Quentin Coignus, Kylian Margaillan</p>
           <p className="text-sm">© 2023 Chaudron</p>
-          <p className="text-sm italic">Toute ressemblance avec un autre site de recettes est purement fortuite et strictement non intentionnelle</p>
+          <p className="text-sm italic">Toute ressemblance avec un autre site de recettes est purement fortuite et strictement non intentionnelle.</p>
         </div>
       </div>
     </>

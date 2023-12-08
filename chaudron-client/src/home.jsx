@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Stars from './stars';
 import { Helmet } from 'react-helmet';
+import NewRecipeButton from './newRecipeButton';
 
 function Home() {
 
@@ -33,6 +34,7 @@ function Home() {
       <Helmet>
         <title>Accueil - Chaudron</title>
       </Helmet>
+      <NewRecipeButton />
       <ul>
         {recipes.map((recipe) => (
           <li key={recipe.id}>

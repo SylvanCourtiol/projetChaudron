@@ -28,7 +28,7 @@ function LogButtons() {
                 <button onClick={handleLogoutClick} className="btn btn-ghost normal-case text-xl mr-4">
                 Se déconnecter
                 </button>
-                <p style={{display: 'inline-block', textAlign: 'left'}}>Bienvenue: {username}</p>
+                <p className="text-slate-500 mr-4" style={{display: 'inline-block', textAlign: 'left'}}>Bienvenue <span className='font-bold'>{username}</span> !</p>
             </div>
         );
     } else {
