@@ -41,6 +41,7 @@ const Register = () => {
             .then((response) => response.json())
             .then((data) => {
               console.log('Utilisateur inscrit avec succès:', data);
+              navigate("/login")
             })
             .catch((error) => console.error('Erreur lors de l\'inscription', error));
 
