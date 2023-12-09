@@ -9,11 +9,15 @@ import Login from './login';
 import Register from './register';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Helmet } from "react-helmet";
 
 
 function App() {
   return (
     <div>
+      <Helmet>
+        <link rel="icon" href="/favicon.ico" />
+      </Helmet>
     <ToastContainer />
     <BrowserRouter>
       <Routes>
