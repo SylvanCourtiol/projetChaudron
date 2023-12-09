@@ -4,7 +4,7 @@ function NoPage() {
     return (
         <>
             <Helmet>
-                <title>Page inexistante - Chaudron</title>
+                <title>Page non trouvée - Chaudron</title>
             </Helmet>
             <div className="container"> 404 - Page non trouvée</div>
         </>

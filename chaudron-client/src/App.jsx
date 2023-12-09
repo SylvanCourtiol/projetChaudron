@@ -1,4 +1,3 @@
-import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import './App.css'
 import Home from './home.jsx'
@@ -34,9 +33,6 @@ function App() {
     
   )
 }
-
-///const root = ReactDOM.createRoot(document.getElementById('root'));
-//root.render(<App />);
 
 export default App
 

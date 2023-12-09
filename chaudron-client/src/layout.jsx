@@ -5,7 +5,6 @@ import Header from "./header"
 function Layout() {
     return (
     <div className="home-container">
-
       <Header />
       <Outlet />
       <Footer />

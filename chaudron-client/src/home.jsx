@@ -29,7 +29,7 @@ function Home() {
       .catch((error) => console.error('Erreur de récupération des recettes', error));
   }, []);
 
-  const noRecipeMessage = recipes.length <= 0 ? (<div className='m-8'>Au mince, il n'y a aucune recette. Il faut vite en ajouter une nouvelle !</div>) : ""
+  const noRecipeMessage = recipes.length <= 0 ? (<div className='m-8'>Oh mince, il n'y a aucune recette. Il faut en ajouter une nouvelle rapidement !</div>) : ""
 
   return (
     <div className="content">

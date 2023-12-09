@@ -13,9 +13,6 @@ class Stars extends React.Component {
         this.inputName = "note-" + Date.now()
 
         this.handleNoteChange = (event) => {
-            // if (!this.state.editable) {
-            //     return
-            // }
             this.state.note = event.target.value
             this.setState({note: event.target.value})
             if (this.state.onNoteChange) {

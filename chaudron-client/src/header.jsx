@@ -1,10 +1,9 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import logo from "./assets/ChaudronHorizontalLogo.png"
 import LogButtons from './logButtons';
 
 function Header() {
-
     return (
       <>
         <div className="navbar bg-base-100 flex justify-between items-center">

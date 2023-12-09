@@ -8,7 +8,7 @@ const EditableTextarea = ({ initialValue, onTextChange }) => {
 
   const handleTextChange = (event) => {
     setEditableTextAreaValue(event.target.value);
-    onTextChange(event.target.value); // Appeler la fonction onTextChange pour transmettre la nouvelle valeur
+    onTextChange(event.target.value);
   };
 
   return (

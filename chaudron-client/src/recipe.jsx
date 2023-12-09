@@ -28,12 +28,9 @@ class Recipe extends React.Component {
             toggleEditionMode : false,
         }   
 
-        
-        //this.state.user = { id: 5, username: "dakou"} // TODO enlever
-
         this.recipe_id = extractRecipeIdFromURL()
 
-        document.title = 'Chargement... | Recettes Chaudron';
+        document.title = 'Chargement... - Chaudron';
 
 
         // Pour que les fonctions soit dans le bon contexte de this
@@ -43,8 +40,7 @@ class Recipe extends React.Component {
         this.handleToggleEditionMode = this.handleToggleEditionMode.bind(this); 
         this.onNoteChange = this.onNoteChange.bind(this);
         this.getAverageMark = this.getAverageMark.bind(this);
-        this.handleDeleteClick = this.handleDeleteClick.bind(this);
-        
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);  
     }
 
     render() {
@@ -324,7 +320,6 @@ class Recipe extends React.Component {
 
     
 } 
-
 
 function extractRecipeIdFromURL() {
     const url = window.location.pathname
