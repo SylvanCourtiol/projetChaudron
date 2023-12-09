@@ -1,0 +1,24 @@
+.recipe-content * {
+    all: revert;
+    text-align: left;
+}
+
+.recipe-content td, .recipe-content table, .recipe-content th {
+    border: 1px solid slategray;
+    border-collapse: collapse;
+    padding: 0.3rem;
+}
+
+.recipe-page {
+    min-width:100%;
+}
+
+.recipe-card {
+    position: relative;
+    margin: 0 auto;
+}
+
+.edition-toggle {
+    position: relative;
+    right: 0px;
+}

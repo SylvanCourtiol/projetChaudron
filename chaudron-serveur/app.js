@@ -1,38 +1,336 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcrypt'
+
+import * as RecipeService from './RecipeService.mjs'
+import { generateToken, verifyToken } from './AuthentificationService.mjs'
 
 const app = express()
 
-const prisma = new PrismaClient()
+app.use(express.json());
 
-app.get('/api/custom/recipes/:id/content', async function (request, response) {
-    const id = parseInt(request.params.id)
-    if (parseInt === NaN) {
-        // problème
-        response.statusCode = 400
-        response.send('Bad request')
+async function verifyAuthorization(req, res, next) {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(403).json({ message: 'Token manquant' });
     }
-    const recipe = await prisma.Recipe.findUnique({
-        where: {
-          id: id,
-        },
-    })
-    if (recipe === undefined) {
+
+    const user = await verifyToken(token)
+    if (user) {
+        req.user = user
+        next();
+    } else {
+        return res.status(401).json({ message: 'Token invalide' });
+    }
+}
+
+//#region Recipes
+
+app.get('/api/custom/recipes', async function (request, response) {
+    const options = {
+        noContent: request.query.noContent !== undefined && request.query.noContent.toLowerCase() == "true",
+    }
+    if (request.query.contentType !== undefined) {
+        options.contentType = request.query.contentType
+    }
+    const recipes = await RecipeService.getRecipes(options)
+
+    if (recipes !== null) {
+        response.send(recipes)
+    } else {
         response.statusCode = 404
         response.send('Not found')
     }
-    if (request.headers['content-type'] == 'text/html') {
+})
 
-    } else if (request.headers['content-type'] == 'text/markdown') {
-        response.headers['content-type'] = 'text/markdown'
-        response.send(recipe.markdown) //TODO
+app.get('/api/custom/recipes/:id', async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (!id) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    const options = {
+        noContent: request.query.noContent !== undefined && request.query.noContent.toLowerCase() == "true",
+    }
+    if (request.query.contentType !== undefined) {
+        options.contentType = request.query.contentType
+    }
+    const recipe = await RecipeService.getRecipeById(id, options)
+
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+app.get('/api/custom/recipes/:id/content', async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (!id) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    const options = {
+        noContent: request.query.noContent !== undefined && request.query.noContent.toLowerCase() == "true",
+    }
+
+    const requestContentType = request.headers['content-type']
+    if (requestContentType == 'text/html' || requestContentType == 'text/markdown') {
+        options.contentType =requestContentType
+    } else {
+        response.statusCode = 400
+        response.send('Bad request')
+    }
+
+    const recipe = await RecipeService.getRecipeById(id, options)
+
+    if (recipe !== null) {
+        response.setHeader('content-type', options.contentType)
+        response.send(recipe.content)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+app.post('/api/custom/recipes', verifyAuthorization, async function (request, response) {
+
+    if (!request.body || !request.body.name || !request.body.content) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const toCreate = {
+        name: request.body.name,
+        markdown: request.body.content,
+    }
+
+    const recipe = await RecipeService.createRecipe(toCreate)
+
+    if (recipe !== null) {
+        response.send(recipe)
     } else {
         response.statusCode = 400
         response.send('Bad request')
     }
 })
 
-app.use(express.static('./public'))
+app.patch('/api/custom/recipes/:id', verifyAuthorization, async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (id === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    
+    const toUpdate = {};
+
+    let somethingToUpdate = false;
+    if (request.body.name) {
+        toUpdate.name = request.body.name
+        somethingToUpdate = true
+    }
+    if (request.body.content) {
+        toUpdate.markdown = request.body.content
+        somethingToUpdate = true
+    }
+
+    if (!somethingToUpdate) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    let recipe = null
+    try {
+        recipe = await RecipeService.updateRecipe(id, toUpdate)  
+    } catch (e) {
+        // empty body
+    }
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 400
+        response.send('Bad request')
+    }
+    
+})
+
+app.delete('/api/custom/recipes/:id', verifyAuthorization, async function (request, response) {
+    const id = parseInt(request.params.id)
+    if (id === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    let recipe = null
+    try {
+        recipe = await RecipeService.deleteRecipe(id)  
+    } catch (e) {
+        // empty body
+        console.log(e)
+    }
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+    
+})
+
+//#endregion Recipes
+
+//#region Marks
+
+app.get('/api/custom/recipesMarks/:recipeId', async function (request, response) {
+    const recipeId = parseInt(request.params.recipeId)
+    if (recipeId === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    try {
+        const mark = await RecipeService.getAverageRecipeMark(recipeId)
+
+        mark.recipeId = recipeId
+        response.send(mark)
+    } catch (e) {
+        response.statusCode = 404
+        response.send('Not found')
+        return
+    }
+})
+
+app.get('/api/custom/recipesMarks/:recipeId/:userId', verifyAuthorization, async function (request, response) {
+    const recipeId = parseInt(request.params.recipeId)
+    const userId = parseInt(request.params.userId)
+    if (recipeId === NaN || userId === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    try {
+        const mark = await RecipeService.getUserRecipeMark(recipeId, userId)
+        mark.recipeId = recipeId
+        mark.userId = userId
+
+        response.send(mark)
+    } catch (e) {
+        response.statusCode = 404
+        response.send('Not found')
+        return
+    }
+})
+
+app.put('/api/custom/recipesMarks/:recipeId/:userId', verifyAuthorization, async function (request, response) {
+    const recipeId = parseInt(request.params.recipeId)
+    const userId = parseInt(request.params.userId)
+    if (recipeId === NaN || userId === NaN) {
+        // problème
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+    const mark = request.body.mark
+    if (!Number.isInteger(mark) || mark < 0 || mark > 10) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const recipe = await RecipeService.createOrUpdateUserRecipeMark(recipeId, userId, mark)
+
+    if (recipe !== null) {
+        response.send(recipe)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+//#endregion Marks
+
+//#region Users
+app.post('/api/custom/users/authentification', async function (request, response) {
+    const { username, password } = request.body
+    if (!username || ! password || username.length === 0 || password.length === 0) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    const user = await RecipeService.getUser(username, password)
+
+    if (user !== null) {
+        const token = generateToken(user);
+        user.token = token
+        response.send(user)
+    } else {
+        response.statusCode = 404
+        response.send('Not found')
+    }
+})
+
+app.post('/api/custom/users/add', async function (request, response) {
+    try {
+        if (!request.body || !request.body.username || request.body.length === 0) {
+            response.statusCode = 400
+            response.send('Bad request')
+            return
+        }
+        const hashedPwd = await bcrypt.hash(request.body.password, 10);
+        const toCreate = { 
+            username: request.body.username, 
+            password: hashedPwd, 
+            mail: request.body.email, 
+            birthdate: request.body.dob +'T00:00:00Z'
+        };
+    
+        const user = await RecipeService.createUser(toCreate)
+    
+        if (user !== null) {
+            response.send(user)
+        } else {
+            response.statusCode = 404
+            response.send('Not found')
+            return
+        }
+    } catch (e) {
+        console.log(e)
+        response.statusCode = 409
+        response.send('Conflict')
+        return
+    }
+
+})
+
+app.get('/api/custom/users/verify', async function (request, response) {
+    const username = request.query.username;
+    if (!username || username.length === 0) {
+        response.statusCode = 400
+        response.send('Bad request')
+        return
+    }
+
+    response.send({'exists' : await RecipeService.verifyUser(username) != null});
+})
+
+//#endregion Users
+
+// app.use(express.static('./public'))
 
 app.listen(3000, function () {
     console.log("Server listening on port 3000")

@@ -4,7 +4,10 @@ generator client {
 
 model User {
   id             Int         @default(autoincrement())    @id
-  name           String
+  username       String      @unique
+  password       String
+  mail           String
+  birthdate      DateTime
 
   marks          RecipeMark[]
   recipes        Recipe[]
@@ -19,7 +22,7 @@ model Recipe {
   marks          RecipeMark[]
   users          User[]
   
-  @@map(name: "recipies") // Alias the model as "recipies" in the database
+  @@map(name: "recipes") // Alias the model as "recipes" in the database
 }
 
 model RecipeMark {
@@ -32,7 +35,7 @@ model RecipeMark {
   recipe         Recipe      @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
   
   @@unique([user_id, recipe_id])
-  @@map(name: "recipie_marks") // Alias the model as "recipie_marks" in the database
+  @@map(name: "recipe_marks") // Alias the model as "recipe_marks" in the database
 }
 
 datasource db {
